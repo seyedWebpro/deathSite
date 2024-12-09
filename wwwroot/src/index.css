@@ -1,0 +1,162 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  @font-face {
+    font-family: "NEIRIZI";
+    src: url("../public/fonts/NEIRIZI.TTF") format("truetype");
+  }
+
+  @font-face {
+    font-family: "NotoNastaliqUrdu";
+    src: url("../public/fonts/NotoNastaliqUrdu-Regular.ttf") format("truetype");
+  }
+  @font-face {
+    font-family: "NotoNastaliqUrduBold";
+    src: url("../public/fonts/NotoNastaliqUrdu-Bold.ttf") format("truetype");
+    font-weight: 700;
+  }
+
+  @font-face {
+    font-family: "BNAZANIN";
+    src: url("../public/fonts/BNAZANIN.TTF") format("truetype");
+  }
+}
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "BNAZANIN";
+  font-size: 1.1rem;
+
+}
+html {
+  overflow-x: hidden;
+}
+
+.adminPanel p,
+.adminPanel .ddvZdT,
+.adminPanel a,
+.adminPanel tr .adminPanel td,
+.adminPanel div,
+.adminPanel span {
+  font-size: 1rem;
+}
+
+.adminPanel * {
+  font-family: "BNAZANIN";
+  font-weight: 500;
+}
+
+body {
+  background: #e8d4ba;
+  min-height: 100vh;
+  height: 100%;
+}
+button {
+  cursor: pointer;
+  outline: 0;
+}
+
+a {
+  text-decoration: none;
+}
+
+h3 {
+  font-weight: 400;
+}
+
+td,
+th {
+  border: 1px solid #c2c2c2;
+  text-align: center;
+  padding: 12px 8px;
+}
+.invoice_table th,
+.invoice_table td{
+  border: 0;
+} 
+.invoice_table tr:nth-child(even) {
+  background-color: #fff !important;
+
+ }
+.invoice_table tr:nth-child(odd) {
+  background-color: #f2f2f291;
+}
+tr:nth-child(even) {
+  background-color: #eae9e991;
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:focus {
+  transition:
+    background-color 600000s 0s,
+    color 600000s 0s;
+}
+
+input[data-autocompleted] {
+  background-color: transparent !important;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  font-family: sans-serif !important;
+
+  -moz-appearance: textfield;
+}
+
+.ck-content {
+  text-align: right !important;
+  min-height: 200px;
+}
+.ck-toolbar__items {
+  direction: rtl !important;
+}
+
+.bOmZtP div:first-child {
+  overflow: visible !important;
+}
+
+.rmdp-input {
+  background: transparent;
+  border: 0;
+  position: relative;
+  top: 2px;
+  margin-top: 19px;
+  outline: none !important;
+  border-radius: 0;
+  border-bottom: 1px solid black !important;
+}
+.rmdp-input:focus {
+  border-top: none !important;
+  border-left: none !important;
+  border-right: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+@media (max-width: 768px) {
+  .rmdp-input {
+    width: 100% !important;
+  }
+}
+
+.sc-eUlrpB * {
+  font-size: 1.1rem !important;
+}
+
+.rmdp-container {
+  width: 100%;
+}
+
+
+.register_martyr .rmdp-input{
+width: 100%;
+padding-bottom: 13px;
+height: 30px;
+}

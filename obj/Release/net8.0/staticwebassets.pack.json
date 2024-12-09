@@ -1,0 +1,485 @@
+{
+  "Files": [
+    {
+      "Id": "C:\\Users\\hero-pc\\Desktop\\DeadWebsit\\api\\wwwroot\\assets\\BNAZANIN-ec8b48f0.TTF",
+      "PackagePath": "staticwebassets\\assets\\BNAZANIN-ec8b48f0.TTF"
+    },
+    {
+      "Id": "C:\\Users\\hero-pc\\Desktop\\DeadWebsit\\api\\wwwroot\\assets\\NEIRIZI-25941f15.TTF",
+      "PackagePath": "staticwebassets\\assets\\NEIRIZI-25941f15.TTF"
+    },
+    {
+      "Id": "C:\\Users\\hero-pc\\Desktop\\DeadWebsit\\api\\wwwroot\\assets\\NotoNastaliqUrdu-Bold-3e3c9cab.ttf",
+      "PackagePath": "staticwebassets\\assets\\NotoNastaliqUrdu-Bold-3e3c9cab.ttf"
+    },
+    {
+      "Id": "C:\\Users\\hero-pc\\Desktop\\DeadWebsit\\api\\wwwroot\\assets\\NotoNastaliqUrdu-Regular-31d1e948.ttf",
+      "PackagePath": "staticwebassets\\assets\\NotoNastaliqUrdu-Regular-31d1e948.ttf"
+    },
+    {
+      "Id": "C:\\Users\\hero-pc\\Desktop\\DeadWebsit\\api\\wwwroot\\assets\\index-2fe56063.css",
+      "PackagePath": "staticwebassets\\assets\\index-2fe56063.css"
+    },
+    {
+      "Id": "C:\\Users\\hero-pc\\Desktop\\DeadWebsit\\api\\wwwroot\\assets\\index-b10ccf1d.js",
+      "PackagePath": "staticwebassets\\assets\\index-b10ccf1d.js"
+    },
+    {
+      "Id": "C:\\Users\\hero-pc\\Desktop\\DeadWebsit\\api\\wwwroot\\fonts\\BNAZANIN.TTF",
+      "PackagePath": "staticwebassets\\fonts\\BNAZANIN.TTF"
+    },
+    {
+      "Id": "C:\\Users\\hero-pc\\Desktop\\DeadWebsit\\api\\wwwroot\\fonts\\BNAZNNBD.TTF",
+      "PackagePath": "staticwebassets\\fonts\\BNAZNNBD.TTF"
+    },
+    {
+      "Id": "C:\\Users\\hero-pc\\Desktop\\DeadWebsit\\api\\wwwroot\\fonts\\NEIRIZI.TTF",
+      "PackagePath": "staticwebassets\\fonts\\NEIRIZI.TTF"
+    },
+    {
+      "Id": "C:\\Users\\hero-pc\\Desktop\\DeadWebsit\\api\\wwwroot\\fonts\\NotoNastaliqUrdu-Bold.ttf",
+      "PackagePath": "staticwebassets\\fonts\\NotoNastaliqUrdu-Bold.ttf"
+    },
+    {
+      "Id": "C:\\Users\\hero-pc\\Desktop\\DeadWebsit\\api\\wwwroot\\fonts\\NotoNastaliqUrdu-Medium.ttf",
+      "PackagePath": "staticwebassets\\fonts\\NotoNastaliqUrdu-Medium.ttf"
+    },
+    {
+      "Id": "C:\\Users\\hero-pc\\Desktop\\DeadWebsit\\api\\wwwroot\\fonts\\NotoNastaliqUrdu-Regular.ttf",
+      "PackagePath": "staticwebassets\\fonts\\NotoNastaliqUrdu-Regular.ttf"
+    },
+    {
+      "Id": "C:\\Users\\hero-pc\\Desktop\\DeadWebsit\\api\\wwwroot\\fonts\\NotoNastaliqUrdu-SemiBold.ttf",
+      "PackagePath": "staticwebassets\\fonts\\NotoNastaliqUrdu-SemiBold.ttf"
+    },
+    {
+      "Id": "C:\\Users\\hero-pc\\Desktop\\DeadWebsit\\api\\wwwroot\\images\\02ecb2a6bbf8b10559ad6cdfbb4320d3_prev_ui.png",
+      "PackagePath": "staticwebassets\\images\\02ecb2a6bbf8b10559ad6cdfbb4320d3_prev_ui.png"
+    },
+    {
+      "Id": "C:\\Users\\hero-pc\\Desktop\\DeadWebsit\\api\\wwwroot\\images\\QURAN - 5 - 128 - mahanmusic.net.mp3",
+      "PackagePath": "staticwebassets\\images\\QURAN - 5 - 128 - mahanmusic.net.mp3"
+    },
+    {
+      "Id": "C:\\Users\\hero-pc\\Desktop\\DeadWebsit\\api\\wwwroot\\images\\abbas.png",
+      "PackagePath": "staticwebassets\\images\\abbas.png"
+    },
+    {
+      "Id": "C:\\Users\\hero-pc\\Desktop\\DeadWebsit\\api\\wwwroot\\images\\b768044b04e3cde64a93773dfce2930d55121669-480p.mp4",
+      "PackagePath": "staticwebassets\\images\\b768044b04e3cde64a93773dfce2930d55121669-480p.mp4"
+    },
+    {
+      "Id": "C:\\Users\\hero-pc\\Desktop\\DeadWebsit\\api\\wwwroot\\images\\background-mobile.png",
+      "PackagePath": "staticwebassets\\images\\background-mobile.png"
+    },
+    {
+      "Id": "C:\\Users\\hero-pc\\Desktop\\DeadWebsit\\api\\wwwroot\\images\\background.png",
+      "PackagePath": "staticwebassets\\images\\background.png"
+    },
+    {
+      "Id": "C:\\Users\\hero-pc\\Desktop\\DeadWebsit\\api\\wwwroot\\images\\border-bottom.svg",
+      "PackagePath": "staticwebassets\\images\\border-bottom.svg"
+    },
+    {
+      "Id": "C:\\Users\\hero-pc\\Desktop\\DeadWebsit\\api\\wwwroot\\images\\border-mobile-bottom.svg",
+      "PackagePath": "staticwebassets\\images\\border-mobile-bottom.svg"
+    },
+    {
+      "Id": "C:\\Users\\hero-pc\\Desktop\\DeadWebsit\\api\\wwwroot\\images\\border-mobile.svg",
+      "PackagePath": "staticwebassets\\images\\border-mobile.svg"
+    },
+    {
+      "Id": "C:\\Users\\hero-pc\\Desktop\\DeadWebsit\\api\\wwwroot\\images\\border.svg",
+      "PackagePath": "staticwebassets\\images\\border.svg"
+    },
+    {
+      "Id": "C:\\Users\\hero-pc\\Desktop\\DeadWebsit\\api\\wwwroot\\images\\cover.svg",
+      "PackagePath": "staticwebassets\\images\\cover.svg"
+    },
+    {
+      "Id": "C:\\Users\\hero-pc\\Desktop\\DeadWebsit\\api\\wwwroot\\images\\cover2.svg",
+      "PackagePath": "staticwebassets\\images\\cover2.svg"
+    },
+    {
+      "Id": "C:\\Users\\hero-pc\\Desktop\\DeadWebsit\\api\\wwwroot\\images\\flower-rose-ai-generated-free-photo-removebg-preview.png",
+      "PackagePath": "staticwebassets\\images\\flower-rose-ai-generated-free-photo-removebg-preview.png"
+    },
+    {
+      "Id": "C:\\Users\\hero-pc\\Desktop\\DeadWebsit\\api\\wwwroot\\images\\flower.png",
+      "PackagePath": "staticwebassets\\images\\flower.png"
+    },
+    {
+      "Id": "C:\\Users\\hero-pc\\Desktop\\DeadWebsit\\api\\wwwroot\\images\\icons8-tudor-rose-96.png",
+      "PackagePath": "staticwebassets\\images\\icons8-tudor-rose-96.png"
+    },
+    {
+      "Id": "C:\\Users\\hero-pc\\Desktop\\DeadWebsit\\api\\wwwroot\\images\\image1.png",
+      "PackagePath": "staticwebassets\\images\\image1.png"
+    },
+    {
+      "Id": "C:\\Users\\hero-pc\\Desktop\\DeadWebsit\\api\\wwwroot\\images\\image2.png",
+      "PackagePath": "staticwebassets\\images\\image2.png"
+    },
+    {
+      "Id": "C:\\Users\\hero-pc\\Desktop\\DeadWebsit\\api\\wwwroot\\images\\logo.svg",
+      "PackagePath": "staticwebassets\\images\\logo.svg"
+    },
+    {
+      "Id": "C:\\Users\\hero-pc\\Desktop\\DeadWebsit\\api\\wwwroot\\images\\lovepik-520-red-roses-in-tanabata-picture_500080014-removebg-preview.png",
+      "PackagePath": "staticwebassets\\images\\lovepik-520-red-roses-in-tanabata-picture_500080014-removebg-preview.png"
+    },
+    {
+      "Id": "C:\\Users\\hero-pc\\Desktop\\DeadWebsit\\api\\wwwroot\\images\\pause-icon-2.svg",
+      "PackagePath": "staticwebassets\\images\\pause-icon-2.svg"
+    },
+    {
+      "Id": "C:\\Users\\hero-pc\\Desktop\\DeadWebsit\\api\\wwwroot\\images\\pause-icon-3.svg",
+      "PackagePath": "staticwebassets\\images\\pause-icon-3.svg"
+    },
+    {
+      "Id": "C:\\Users\\hero-pc\\Desktop\\DeadWebsit\\api\\wwwroot\\images\\pause-icon-4.svg",
+      "PackagePath": "staticwebassets\\images\\pause-icon-4.svg"
+    },
+    {
+      "Id": "C:\\Users\\hero-pc\\Desktop\\DeadWebsit\\api\\wwwroot\\images\\play-icon-2.svg",
+      "PackagePath": "staticwebassets\\images\\play-icon-2.svg"
+    },
+    {
+      "Id": "C:\\Users\\hero-pc\\Desktop\\DeadWebsit\\api\\wwwroot\\images\\play-icon-3.svg",
+      "PackagePath": "staticwebassets\\images\\play-icon-3.svg"
+    },
+    {
+      "Id": "C:\\Users\\hero-pc\\Desktop\\DeadWebsit\\api\\wwwroot\\images\\play-icon-4.svg",
+      "PackagePath": "staticwebassets\\images\\play-icon-4.svg"
+    },
+    {
+      "Id": "C:\\Users\\hero-pc\\Desktop\\DeadWebsit\\api\\wwwroot\\images\\play-icon.svg",
+      "PackagePath": "staticwebassets\\images\\play-icon.svg"
+    },
+    {
+      "Id": "C:\\Users\\hero-pc\\Desktop\\DeadWebsit\\api\\wwwroot\\images\\qr-create.svg",
+      "PackagePath": "staticwebassets\\images\\qr-create.svg"
+    },
+    {
+      "Id": "C:\\Users\\hero-pc\\Desktop\\DeadWebsit\\api\\wwwroot\\images\\shadow.png",
+      "PackagePath": "staticwebassets\\images\\shadow.png"
+    },
+    {
+      "Id": "C:\\Users\\hero-pc\\Desktop\\DeadWebsit\\api\\wwwroot\\images\\svg.png",
+      "PackagePath": "staticwebassets\\images\\svg.png"
+    },
+    {
+      "Id": "C:\\Users\\hero-pc\\Desktop\\DeadWebsit\\api\\wwwroot\\index.html",
+      "PackagePath": "staticwebassets\\index.html"
+    },
+    {
+      "Id": "C:\\Users\\hero-pc\\Desktop\\DeadWebsit\\api\\wwwroot\\src\\App.css",
+      "PackagePath": "staticwebassets\\src\\App.css"
+    },
+    {
+      "Id": "C:\\Users\\hero-pc\\Desktop\\DeadWebsit\\api\\wwwroot\\src\\App.tsx",
+      "PackagePath": "staticwebassets\\src\\App.tsx"
+    },
+    {
+      "Id": "C:\\Users\\hero-pc\\Desktop\\DeadWebsit\\api\\wwwroot\\src\\components\\modules\\header\\Header.tsx",
+      "PackagePath": "staticwebassets\\src\\components\\modules\\header\\Header.tsx"
+    },
+    {
+      "Id": "C:\\Users\\hero-pc\\Desktop\\DeadWebsit\\api\\wwwroot\\src\\components\\modules\\loader\\Loader.tsx",
+      "PackagePath": "staticwebassets\\src\\components\\modules\\loader\\Loader.tsx"
+    },
+    {
+      "Id": "C:\\Users\\hero-pc\\Desktop\\DeadWebsit\\api\\wwwroot\\src\\components\\modules\\title\\Title.tsx",
+      "PackagePath": "staticwebassets\\src\\components\\modules\\title\\Title.tsx"
+    },
+    {
+      "Id": "C:\\Users\\hero-pc\\Desktop\\DeadWebsit\\api\\wwwroot\\src\\components\\modules\\topbar\\Topbar.tsx",
+      "PackagePath": "staticwebassets\\src\\components\\modules\\topbar\\Topbar.tsx"
+    },
+    {
+      "Id": "C:\\Users\\hero-pc\\Desktop\\DeadWebsit\\api\\wwwroot\\src\\components\\shadcn\\ui\\accordion.tsx",
+      "PackagePath": "staticwebassets\\src\\components\\shadcn\\ui\\accordion.tsx"
+    },
+    {
+      "Id": "C:\\Users\\hero-pc\\Desktop\\DeadWebsit\\api\\wwwroot\\src\\components\\shadcn\\ui\\button.tsx",
+      "PackagePath": "staticwebassets\\src\\components\\shadcn\\ui\\button.tsx"
+    },
+    {
+      "Id": "C:\\Users\\hero-pc\\Desktop\\DeadWebsit\\api\\wwwroot\\src\\components\\shadcn\\ui\\dialog.tsx",
+      "PackagePath": "staticwebassets\\src\\components\\shadcn\\ui\\dialog.tsx"
+    },
+    {
+      "Id": "C:\\Users\\hero-pc\\Desktop\\DeadWebsit\\api\\wwwroot\\src\\components\\shadcn\\ui\\input-otp.tsx",
+      "PackagePath": "staticwebassets\\src\\components\\shadcn\\ui\\input-otp.tsx"
+    },
+    {
+      "Id": "C:\\Users\\hero-pc\\Desktop\\DeadWebsit\\api\\wwwroot\\src\\components\\shadcn\\ui\\sheet.tsx",
+      "PackagePath": "staticwebassets\\src\\components\\shadcn\\ui\\sheet.tsx"
+    },
+    {
+      "Id": "C:\\Users\\hero-pc\\Desktop\\DeadWebsit\\api\\wwwroot\\src\\components\\shadcn\\ui\\toast.tsx",
+      "PackagePath": "staticwebassets\\src\\components\\shadcn\\ui\\toast.tsx"
+    },
+    {
+      "Id": "C:\\Users\\hero-pc\\Desktop\\DeadWebsit\\api\\wwwroot\\src\\components\\shadcn\\ui\\toaster.tsx",
+      "PackagePath": "staticwebassets\\src\\components\\shadcn\\ui\\toaster.tsx"
+    },
+    {
+      "Id": "C:\\Users\\hero-pc\\Desktop\\DeadWebsit\\api\\wwwroot\\src\\components\\templates\\AdminPanel\\articles\\Modal.tsx",
+      "PackagePath": "staticwebassets\\src\\components\\templates\\AdminPanel\\articles\\Modal.tsx"
+    },
+    {
+      "Id": "C:\\Users\\hero-pc\\Desktop\\DeadWebsit\\api\\wwwroot\\src\\components\\templates\\AdminPanel\\banner\\Modal.tsx",
+      "PackagePath": "staticwebassets\\src\\components\\templates\\AdminPanel\\banner\\Modal.tsx"
+    },
+    {
+      "Id": "C:\\Users\\hero-pc\\Desktop\\DeadWebsit\\api\\wwwroot\\src\\components\\templates\\AdminPanel\\condolences\\Modal.tsx",
+      "PackagePath": "staticwebassets\\src\\components\\templates\\AdminPanel\\condolences\\Modal.tsx"
+    },
+    {
+      "Id": "C:\\Users\\hero-pc\\Desktop\\DeadWebsit\\api\\wwwroot\\src\\components\\templates\\AdminPanel\\deceaseds\\Modal.tsx",
+      "PackagePath": "staticwebassets\\src\\components\\templates\\AdminPanel\\deceaseds\\Modal.tsx"
+    },
+    {
+      "Id": "C:\\Users\\hero-pc\\Desktop\\DeadWebsit\\api\\wwwroot\\src\\components\\templates\\AdminPanel\\news\\Modal.tsx",
+      "PackagePath": "staticwebassets\\src\\components\\templates\\AdminPanel\\news\\Modal.tsx"
+    },
+    {
+      "Id": "C:\\Users\\hero-pc\\Desktop\\DeadWebsit\\api\\wwwroot\\src\\components\\templates\\AdminPanel\\packages\\Modal.tsx",
+      "PackagePath": "staticwebassets\\src\\components\\templates\\AdminPanel\\packages\\Modal.tsx"
+    },
+    {
+      "Id": "C:\\Users\\hero-pc\\Desktop\\DeadWebsit\\api\\wwwroot\\src\\components\\templates\\AdminPanel\\users\\Modal.tsx",
+      "PackagePath": "staticwebassets\\src\\components\\templates\\AdminPanel\\users\\Modal.tsx"
+    },
+    {
+      "Id": "C:\\Users\\hero-pc\\Desktop\\DeadWebsit\\api\\wwwroot\\src\\components\\templates\\login\\main\\components\\Login.tsx",
+      "PackagePath": "staticwebassets\\src\\components\\templates\\login\\main\\components\\Login.tsx"
+    },
+    {
+      "Id": "C:\\Users\\hero-pc\\Desktop\\DeadWebsit\\api\\wwwroot\\src\\components\\templates\\login\\main\\components\\Otp.tsx",
+      "PackagePath": "staticwebassets\\src\\components\\templates\\login\\main\\components\\Otp.tsx"
+    },
+    {
+      "Id": "C:\\Users\\hero-pc\\Desktop\\DeadWebsit\\api\\wwwroot\\src\\components\\templates\\login\\main\\components\\Password.tsx",
+      "PackagePath": "staticwebassets\\src\\components\\templates\\login\\main\\components\\Password.tsx"
+    },
+    {
+      "Id": "C:\\Users\\hero-pc\\Desktop\\DeadWebsit\\api\\wwwroot\\src\\components\\templates\\login\\main\\components\\Register.tsx",
+      "PackagePath": "staticwebassets\\src\\components\\templates\\login\\main\\components\\Register.tsx"
+    },
+    {
+      "Id": "C:\\Users\\hero-pc\\Desktop\\DeadWebsit\\api\\wwwroot\\src\\components\\templates\\login\\main\\components\\Timer.tsx",
+      "PackagePath": "staticwebassets\\src\\components\\templates\\login\\main\\components\\Timer.tsx"
+    },
+    {
+      "Id": "C:\\Users\\hero-pc\\Desktop\\DeadWebsit\\api\\wwwroot\\src\\hooks\\use-toast.ts",
+      "PackagePath": "staticwebassets\\src\\hooks\\use-toast.ts"
+    },
+    {
+      "Id": "C:\\Users\\hero-pc\\Desktop\\DeadWebsit\\api\\wwwroot\\src\\hooks\\useGetData.tsx",
+      "PackagePath": "staticwebassets\\src\\hooks\\useGetData.tsx"
+    },
+    {
+      "Id": "C:\\Users\\hero-pc\\Desktop\\DeadWebsit\\api\\wwwroot\\src\\hooks\\usePostData.tsx",
+      "PackagePath": "staticwebassets\\src\\hooks\\usePostData.tsx"
+    },
+    {
+      "Id": "C:\\Users\\hero-pc\\Desktop\\DeadWebsit\\api\\wwwroot\\src\\index.css",
+      "PackagePath": "staticwebassets\\src\\index.css"
+    },
+    {
+      "Id": "C:\\Users\\hero-pc\\Desktop\\DeadWebsit\\api\\wwwroot\\src\\layouts\\adminPanel.tsx",
+      "PackagePath": "staticwebassets\\src\\layouts\\adminPanel.tsx"
+    },
+    {
+      "Id": "C:\\Users\\hero-pc\\Desktop\\DeadWebsit\\api\\wwwroot\\src\\lib\\utils.ts",
+      "PackagePath": "staticwebassets\\src\\lib\\utils.ts"
+    },
+    {
+      "Id": "C:\\Users\\hero-pc\\Desktop\\DeadWebsit\\api\\wwwroot\\src\\main.tsx",
+      "PackagePath": "staticwebassets\\src\\main.tsx"
+    },
+    {
+      "Id": "C:\\Users\\hero-pc\\Desktop\\DeadWebsit\\api\\wwwroot\\src\\pages\\AdminPanel\\Articles\\Articles.tsx",
+      "PackagePath": "staticwebassets\\src\\pages\\AdminPanel\\Articles\\Articles.tsx"
+    },
+    {
+      "Id": "C:\\Users\\hero-pc\\Desktop\\DeadWebsit\\api\\wwwroot\\src\\pages\\AdminPanel\\Banner\\Banner.tsx",
+      "PackagePath": "staticwebassets\\src\\pages\\AdminPanel\\Banner\\Banner.tsx"
+    },
+    {
+      "Id": "C:\\Users\\hero-pc\\Desktop\\DeadWebsit\\api\\wwwroot\\src\\pages\\AdminPanel\\Barcode\\Barcode.tsx",
+      "PackagePath": "staticwebassets\\src\\pages\\AdminPanel\\Barcode\\Barcode.tsx"
+    },
+    {
+      "Id": "C:\\Users\\hero-pc\\Desktop\\DeadWebsit\\api\\wwwroot\\src\\pages\\AdminPanel\\Condolences\\Condolences.tsx",
+      "PackagePath": "staticwebassets\\src\\pages\\AdminPanel\\Condolences\\Condolences.tsx"
+    },
+    {
+      "Id": "C:\\Users\\hero-pc\\Desktop\\DeadWebsit\\api\\wwwroot\\src\\pages\\AdminPanel\\ContentManagement\\ContentManagement.tsx",
+      "PackagePath": "staticwebassets\\src\\pages\\AdminPanel\\ContentManagement\\ContentManagement.tsx"
+    },
+    {
+      "Id": "C:\\Users\\hero-pc\\Desktop\\DeadWebsit\\api\\wwwroot\\src\\pages\\AdminPanel\\Deceaseds\\Deceaseds.tsx",
+      "PackagePath": "staticwebassets\\src\\pages\\AdminPanel\\Deceaseds\\Deceaseds.tsx"
+    },
+    {
+      "Id": "C:\\Users\\hero-pc\\Desktop\\DeadWebsit\\api\\wwwroot\\src\\pages\\AdminPanel\\Nav\\Nav.tsx",
+      "PackagePath": "staticwebassets\\src\\pages\\AdminPanel\\Nav\\Nav.tsx"
+    },
+    {
+      "Id": "C:\\Users\\hero-pc\\Desktop\\DeadWebsit\\api\\wwwroot\\src\\pages\\AdminPanel\\News\\News.tsx",
+      "PackagePath": "staticwebassets\\src\\pages\\AdminPanel\\News\\News.tsx"
+    },
+    {
+      "Id": "C:\\Users\\hero-pc\\Desktop\\DeadWebsit\\api\\wwwroot\\src\\pages\\AdminPanel\\Packages\\Packages.tsx",
+      "PackagePath": "staticwebassets\\src\\pages\\AdminPanel\\Packages\\Packages.tsx"
+    },
+    {
+      "Id": "C:\\Users\\hero-pc\\Desktop\\DeadWebsit\\api\\wwwroot\\src\\pages\\AdminPanel\\Price\\Price.tsx",
+      "PackagePath": "staticwebassets\\src\\pages\\AdminPanel\\Price\\Price.tsx"
+    },
+    {
+      "Id": "C:\\Users\\hero-pc\\Desktop\\DeadWebsit\\api\\wwwroot\\src\\pages\\AdminPanel\\Sms\\Sms.tsx",
+      "PackagePath": "staticwebassets\\src\\pages\\AdminPanel\\Sms\\Sms.tsx"
+    },
+    {
+      "Id": "C:\\Users\\hero-pc\\Desktop\\DeadWebsit\\api\\wwwroot\\src\\pages\\AdminPanel\\Surah\\Surah.tsx",
+      "PackagePath": "staticwebassets\\src\\pages\\AdminPanel\\Surah\\Surah.tsx"
+    },
+    {
+      "Id": "C:\\Users\\hero-pc\\Desktop\\DeadWebsit\\api\\wwwroot\\src\\pages\\AdminPanel\\Tags\\Tags.tsx",
+      "PackagePath": "staticwebassets\\src\\pages\\AdminPanel\\Tags\\Tags.tsx"
+    },
+    {
+      "Id": "C:\\Users\\hero-pc\\Desktop\\DeadWebsit\\api\\wwwroot\\src\\pages\\AdminPanel\\Users\\Users.tsx",
+      "PackagePath": "staticwebassets\\src\\pages\\AdminPanel\\Users\\Users.tsx"
+    },
+    {
+      "Id": "C:\\Users\\hero-pc\\Desktop\\DeadWebsit\\api\\wwwroot\\src\\pages\\Deceased\\Deceased.tsx",
+      "PackagePath": "staticwebassets\\src\\pages\\Deceased\\Deceased.tsx"
+    },
+    {
+      "Id": "C:\\Users\\hero-pc\\Desktop\\DeadWebsit\\api\\wwwroot\\src\\pages\\Deceased\\deceased.css",
+      "PackagePath": "staticwebassets\\src\\pages\\Deceased\\deceased.css"
+    },
+    {
+      "Id": "C:\\Users\\hero-pc\\Desktop\\DeadWebsit\\api\\wwwroot\\src\\pages\\Home\\index.tsx",
+      "PackagePath": "staticwebassets\\src\\pages\\Home\\index.tsx"
+    },
+    {
+      "Id": "C:\\Users\\hero-pc\\Desktop\\DeadWebsit\\api\\wwwroot\\src\\pages\\Martyr\\Packages\\Packages.tsx",
+      "PackagePath": "staticwebassets\\src\\pages\\Martyr\\Packages\\Packages.tsx"
+    },
+    {
+      "Id": "C:\\Users\\hero-pc\\Desktop\\DeadWebsit\\api\\wwwroot\\src\\pages\\Martyr\\Packages\\steps\\Invoice.tsx",
+      "PackagePath": "staticwebassets\\src\\pages\\Martyr\\Packages\\steps\\Invoice.tsx"
+    },
+    {
+      "Id": "C:\\Users\\hero-pc\\Desktop\\DeadWebsit\\api\\wwwroot\\src\\pages\\Martyr\\Packages\\steps\\Step2.tsx",
+      "PackagePath": "staticwebassets\\src\\pages\\Martyr\\Packages\\steps\\Step2.tsx"
+    },
+    {
+      "Id": "C:\\Users\\hero-pc\\Desktop\\DeadWebsit\\api\\wwwroot\\src\\pages\\Martyr\\Packages\\steps\\Step3.tsx",
+      "PackagePath": "staticwebassets\\src\\pages\\Martyr\\Packages\\steps\\Step3.tsx"
+    },
+    {
+      "Id": "C:\\Users\\hero-pc\\Desktop\\DeadWebsit\\api\\wwwroot\\src\\pages\\Martyr\\Register\\Register.tsx",
+      "PackagePath": "staticwebassets\\src\\pages\\Martyr\\Register\\Register.tsx"
+    },
+    {
+      "Id": "C:\\Users\\hero-pc\\Desktop\\DeadWebsit\\api\\wwwroot\\src\\pages\\login\\Index.tsx",
+      "PackagePath": "staticwebassets\\src\\pages\\login\\Index.tsx"
+    },
+    {
+      "Id": "C:\\Users\\hero-pc\\Desktop\\DeadWebsit\\api\\wwwroot\\src\\providers\\QueryWrapper.tsx",
+      "PackagePath": "staticwebassets\\src\\providers\\QueryWrapper.tsx"
+    },
+    {
+      "Id": "C:\\Users\\hero-pc\\Desktop\\DeadWebsit\\api\\wwwroot\\src\\routes.tsx",
+      "PackagePath": "staticwebassets\\src\\routes.tsx"
+    },
+    {
+      "Id": "C:\\Users\\hero-pc\\Desktop\\DeadWebsit\\api\\wwwroot\\src\\stores\\auth.ts",
+      "PackagePath": "staticwebassets\\src\\stores\\auth.ts"
+    },
+    {
+      "Id": "C:\\Users\\hero-pc\\Desktop\\DeadWebsit\\api\\wwwroot\\src\\utils\\ScrollToUp.tsx",
+      "PackagePath": "staticwebassets\\src\\utils\\ScrollToUp.tsx"
+    },
+    {
+      "Id": "C:\\Users\\hero-pc\\Desktop\\DeadWebsit\\api\\wwwroot\\src\\utils\\auth.tsx",
+      "PackagePath": "staticwebassets\\src\\utils\\auth.tsx"
+    },
+    {
+      "Id": "C:\\Users\\hero-pc\\Desktop\\DeadWebsit\\api\\wwwroot\\src\\utils\\data.ts",
+      "PackagePath": "staticwebassets\\src\\utils\\data.ts"
+    },
+    {
+      "Id": "C:\\Users\\hero-pc\\Desktop\\DeadWebsit\\api\\wwwroot\\src\\utils\\fetchs.ts",
+      "PackagePath": "staticwebassets\\src\\utils\\fetchs.ts"
+    },
+    {
+      "Id": "C:\\Users\\hero-pc\\Desktop\\DeadWebsit\\api\\wwwroot\\src\\utils\\utils.ts",
+      "PackagePath": "staticwebassets\\src\\utils\\utils.ts"
+    },
+    {
+      "Id": "C:\\Users\\hero-pc\\Desktop\\DeadWebsit\\api\\wwwroot\\src\\validations\\rules.ts",
+      "PackagePath": "staticwebassets\\src\\validations\\rules.ts"
+    },
+    {
+      "Id": "C:\\Users\\hero-pc\\Desktop\\DeadWebsit\\api\\wwwroot\\src\\vite-env.d.ts",
+      "PackagePath": "staticwebassets\\src\\vite-env.d.ts"
+    },
+    {
+      "Id": "C:\\Users\\hero-pc\\Desktop\\DeadWebsit\\api\\wwwroot\\video\\film1.mp4",
+      "PackagePath": "staticwebassets\\video\\film1.mp4"
+    },
+    {
+      "Id": "C:\\Users\\hero-pc\\Desktop\\DeadWebsit\\api\\wwwroot\\video\\film2.mp4",
+      "PackagePath": "staticwebassets\\video\\film2.mp4"
+    },
+    {
+      "Id": "C:\\Users\\hero-pc\\Desktop\\DeadWebsit\\api\\wwwroot\\video\\film3.mp4",
+      "PackagePath": "staticwebassets\\video\\film3.mp4"
+    },
+    {
+      "Id": "C:\\Users\\hero-pc\\Desktop\\DeadWebsit\\api\\wwwroot\\vite.svg",
+      "PackagePath": "staticwebassets\\vite.svg"
+    },
+    {
+      "Id": "C:\\Users\\hero-pc\\Desktop\\DeadWebsit\\api\\wwwroot\\voice\\Al-Fatiha.mp3",
+      "PackagePath": "staticwebassets\\voice\\Al-Fatiha.mp3"
+    },
+    {
+      "Id": "C:\\Users\\hero-pc\\Desktop\\DeadWebsit\\api\\wwwroot\\voice\\al-omran.mp3",
+      "PackagePath": "staticwebassets\\voice\\al-omran.mp3"
+    },
+    {
+      "Id": "C:\\Users\\hero-pc\\Desktop\\DeadWebsit\\api\\wwwroot\\voice\\ayatolkorsi.mp3",
+      "PackagePath": "staticwebassets\\voice\\ayatolkorsi.mp3"
+    },
+    {
+      "Id": "C:\\Users\\hero-pc\\Desktop\\DeadWebsit\\api\\wwwroot\\voice\\yasin.mp3",
+      "PackagePath": "staticwebassets\\voice\\yasin.mp3"
+    },
+    {
+      "Id": "obj\\Release\\net8.0\\staticwebassets\\msbuild.api.Microsoft.AspNetCore.StaticWebAssets.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssets.props"
+    },
+    {
+      "Id": "obj\\Release\\net8.0\\staticwebassets\\msbuild.build.api.props",
+      "PackagePath": "build\\api.props"
+    },
+    {
+      "Id": "obj\\Release\\net8.0\\staticwebassets\\msbuild.buildMultiTargeting.api.props",
+      "PackagePath": "buildMultiTargeting\\api.props"
+    },
+    {
+      "Id": "obj\\Release\\net8.0\\staticwebassets\\msbuild.buildTransitive.api.props",
+      "PackagePath": "buildTransitive\\api.props"
+    }
+  ],
+  "ElementsToRemove": []
+}
