@@ -22,7 +22,7 @@ namespace api.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("api.Model.AdminModel.CondolenceMessage", b =>
+            modelBuilder.Entity("CondolenceMessage", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -36,6 +36,9 @@ namespace api.Migrations
 
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
+
+                    b.Property<int>("DeceasedId")
+                        .HasColumnType("int");
 
                     b.Property<string>("DeceasedName")
                         .IsRequired()
@@ -52,9 +55,79 @@ namespace api.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("UserId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
+                    b.HasIndex("DeceasedId");
+
+                    b.HasIndex("UserId");
+
                     b.ToTable("condolenceMessages");
+                });
+
+            modelBuilder.Entity("api.Model.AdminModel.Banner", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("DesktopImagePath")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("MobileImagePath")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("PublishedDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Banners");
+                });
+
+            modelBuilder.Entity("api.Model.AdminModel.LogoSiteSettings", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("LogoImagePath")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("logoSiteSettings");
+                });
+
+            modelBuilder.Entity("api.Model.AdminModel.MenuSiteSettings", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Link")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("Order")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("MenuSiteSettings");
                 });
 
             modelBuilder.Entity("api.Model.AdminModel.SmsTemplate", b =>
@@ -78,6 +151,27 @@ namespace api.Migrations
                     b.ToTable("smsTemplates");
                 });
 
+            modelBuilder.Entity("api.Model.AdminModel.Surah", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("FilePath")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Surahs");
+                });
+
             modelBuilder.Entity("api.Model.AdminModel.Tag", b =>
                 {
                     b.Property<int>("Id")
@@ -86,14 +180,170 @@ namespace api.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Name")
+                    b.Property<string>("Description")
                         .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
                     b.ToTable("tags");
+                });
+
+            modelBuilder.Entity("api.Model.Blog", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FilePath")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("PublishedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("blogs");
+                });
+
+            modelBuilder.Entity("api.Model.ContactMeForm", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FullName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PhoneNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Subject")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ContactMeForms");
+                });
+
+            modelBuilder.Entity("api.Model.Deceased", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Age")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("DateOfBirth")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DateOfMartyrdom")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Khaterat")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("OwnerId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("PhotoUrls")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PlaceOfMartyrdom")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("PublishedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("VideoUrls")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("VoiceUrls")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OwnerId");
+
+                    b.ToTable("Deceaseds");
+                });
+
+            modelBuilder.Entity("api.Model.News", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FilePath")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("PublishedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("News");
                 });
 
             modelBuilder.Entity("api.Model.Package", b =>
@@ -185,7 +435,15 @@ namespace api.Migrations
                     b.Property<DateOnly>("BirthDead")
                         .HasColumnType("date");
 
+                    b.Property<string>("BurialSiteLink")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("CauseOfMartyrdom")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DeadPlaceLink")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -209,6 +467,10 @@ namespace api.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("MediaLink")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Memories")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -229,7 +491,15 @@ namespace api.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Poem")
+                    b.Property<string>("PlaceOfBurial")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PoemVerseOne")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PoemVerseTwo")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -253,9 +523,28 @@ namespace api.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("virtualLink")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("Id");
 
                     b.ToTable("shahids");
+                });
+
+            modelBuilder.Entity("api.Model.ShahidTag", b =>
+                {
+                    b.Property<int>("ShahidId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TagId")
+                        .HasColumnType("int");
+
+                    b.HasKey("ShahidId", "TagId");
+
+                    b.HasIndex("TagId");
+
+                    b.ToTable("ShahidTags");
                 });
 
             modelBuilder.Entity("api.Model.User", b =>
@@ -265,6 +554,9 @@ namespace api.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Email")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("PackageId")
                         .HasColumnType("int");
@@ -322,6 +614,53 @@ namespace api.Migrations
                     b.ToTable("userTokens");
                 });
 
+            modelBuilder.Entity("CondolenceMessage", b =>
+                {
+                    b.HasOne("api.Model.Deceased", "Deceased")
+                        .WithMany("CondolenceMessages")
+                        .HasForeignKey("DeceasedId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("api.Model.User", "User")
+                        .WithMany("CondolenceMessages")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Deceased");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("api.Model.Deceased", b =>
+                {
+                    b.HasOne("api.Model.User", "Owner")
+                        .WithMany("Deceaseds")
+                        .HasForeignKey("OwnerId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Owner");
+                });
+
+            modelBuilder.Entity("api.Model.ShahidTag", b =>
+                {
+                    b.HasOne("api.Model.Shahid", "Shahid")
+                        .WithMany("ShahidTags")
+                        .HasForeignKey("ShahidId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("api.Model.AdminModel.Tag", "Tag")
+                        .WithMany("ShahidTags")
+                        .HasForeignKey("TagId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Shahid");
+
+                    b.Navigation("Tag");
+                });
+
             modelBuilder.Entity("api.Model.User", b =>
                 {
                     b.HasOne("api.Model.Package", "Package")
@@ -331,9 +670,31 @@ namespace api.Migrations
                     b.Navigation("Package");
                 });
 
+            modelBuilder.Entity("api.Model.AdminModel.Tag", b =>
+                {
+                    b.Navigation("ShahidTags");
+                });
+
+            modelBuilder.Entity("api.Model.Deceased", b =>
+                {
+                    b.Navigation("CondolenceMessages");
+                });
+
             modelBuilder.Entity("api.Model.Package", b =>
                 {
                     b.Navigation("Users");
+                });
+
+            modelBuilder.Entity("api.Model.Shahid", b =>
+                {
+                    b.Navigation("ShahidTags");
+                });
+
+            modelBuilder.Entity("api.Model.User", b =>
+                {
+                    b.Navigation("CondolenceMessages");
+
+                    b.Navigation("Deceaseds");
                 });
 #pragma warning restore 612, 618
         }

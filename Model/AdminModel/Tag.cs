@@ -8,9 +8,15 @@ namespace api.Model.AdminModel
 {
     public class Tag
     {
-        public int Id { get; set;}
-        [Required(ErrorMessage = "نام برچسب الزامی است.")]
-    [StringLength(30, ErrorMessage = "نام برچسب نمی‌تواند بیشتر از 30 کاراکتر باشد.")]
-    public string Name { get; set; }
+        public int Id { get; set; }
+
+        public string Title { get; set; }
+
+        public string Type { get; set; }
+
+        public string Description { get; set; }
+
+        // رابطه Many-to-Many
+        public List<ShahidTag> ShahidTags { get; set; } = new List<ShahidTag>();
     }
 }

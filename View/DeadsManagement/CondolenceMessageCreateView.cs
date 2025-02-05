@@ -21,5 +21,8 @@ namespace api.View.DeadsManagement
 
     [Required(ErrorMessage = "متن پیام الزامی است.")]
     public string MessageText { get; set; }
+
+    public int DeceasedId { get; set; }  // متوفی موردنظر
+    public int UserId { get; set; }      // کاربری که پیام را ارسال کرده
     }
 }

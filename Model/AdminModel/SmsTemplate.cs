@@ -9,8 +9,7 @@ namespace api.Model.AdminModel
     {
         public int Id { get; set; }
 
-        // تغییر نوع MessageType به enum
-        public string MessageType { get; set; } // نوع پیام به صورت Enum
+        public string MessageType { get; set; } 
 
         public string Message { get; set; } // متن پیام
     }

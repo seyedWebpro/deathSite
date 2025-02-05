@@ -14,7 +14,7 @@ var builder = WebApplication.CreateBuilder(args);
 // 1. Configuration را از appsettings.json بارگذاری کنید:
 builder.Configuration.AddJsonFile("appsettings.json");
 
-#region policy
+#region policy‍
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(name: "myCors", policy =>{
@@ -30,7 +30,11 @@ builder.Services.AddHttpClient();
 
 // Add services to the container.
 
-builder.Services.AddControllers();
+// Add services to the container.
+builder.Services.AddControllers().AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.Converters.Add(new DateOnlyJsonConverter()); // ثبت کانورتر
+});
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 
@@ -98,11 +102,12 @@ builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
 #region dbContext
 builder.Services.AddDbContext<apiContext>(options =>
 {
-    options.UseSqlServer(builder.Configuration["defultConnection"]); //         localConnection                                                        
+    options.UseSqlServer(builder.Configuration["defultConnection"]); //       localConnection                                                          
 });
 
 
 #endregion
+
 
 // Register IMemoryCache
 builder.Services.AddMemoryCache();
@@ -149,7 +154,7 @@ app.UseCors("myCors");
 
 app.UseAuthorization();
 
-app.UseStaticFiles();
+app.UseStaticFiles(); // برای wwwroot
 
 app.MapControllers();
 

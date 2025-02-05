@@ -1,14 +1,14 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 
 namespace api.Services
 {
-    public interface IFileUploadService
+   public interface IFileUploadService
     {
-        Task<string> UploadFileAsync(IFormFile file);
-        Task DeleteFileAsync(string fileName);
-        Task<List<string>> ListFilesAsync();
+        Task<string> UploadFileAsync(IFormFile file, string entityType, int entityId);
+        Task<List<string>> UploadMultipleFilesAsync(List<IFormFile> files, string entityType, int entityId);
+        Task DeleteFileAsync(string fileName, string entityType, int entityId);
+        Task<List<string>> ListFilesAsync(string entityType, int entityId);
     }
 }
