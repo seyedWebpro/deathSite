@@ -19,7 +19,6 @@
     <PackageReference Include="SmsIrRestfulNetCore" Version="1.1.4" />
     <PackageReference Include="System.ServiceModel.Http" Version="8.1.1" />
     <PackageReference Include="System.ServiceModel.Primitives" Version="8.1.1" />
-    <PackageReference Include="Zarinpal" Version="3.0.1" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="System.ServiceModel.Duplex" Version="6.0.0" />

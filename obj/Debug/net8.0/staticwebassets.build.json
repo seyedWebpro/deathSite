@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "cEtqRATaRTlsUy5Pk+IJj/iVAT1ZqkvUiZltOHdHte8=",
+  "Hash": "CZ4alUgqc3bUD4ol5jL3DRbSzixsgKwp3HnHMssqA0k=",
   "Source": "api",
   "BasePath": "_content/api",
   "Mode": "Default",
@@ -10,17 +10,17 @@
     {
       "Name": "api\\wwwroot",
       "Source": "api",
-      "ContentRoot": "C:\\Users\\hero-pc\\Desktop\\DeadWebsit\\api\\wwwroot\\",
+      "ContentRoot": "D:\\DeadWebsit\\api\\deathSite\\wwwroot\\",
       "BasePath": "_content/api",
       "Pattern": "**"
     }
   ],
   "Assets": [
     {
-      "Identity": "C:\\Users\\hero-pc\\Desktop\\DeadWebsit\\api\\wwwroot\\uploads\\news\\2\\images\\26fa8f83-909b-47de-983e-a2c15efaacdb.jpg",
+      "Identity": "D:\\DeadWebsit\\api\\deathSite\\wwwroot\\uploads\\news\\2\\images\\26fa8f83-909b-47de-983e-a2c15efaacdb.jpg",
       "SourceId": "api",
       "SourceType": "Discovered",
-      "ContentRoot": "C:\\Users\\hero-pc\\Desktop\\DeadWebsit\\api\\wwwroot\\",
+      "ContentRoot": "D:\\DeadWebsit\\api\\deathSite\\wwwroot\\",
       "BasePath": "_content/api",
       "RelativePath": "uploads/news/2/images/26fa8f83-909b-47de-983e-a2c15efaacdb.jpg",
       "AssetKind": "All",

@@ -381,8 +381,7 @@ namespace api.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("NotificationCount")
                         .HasColumnType("int");
@@ -614,6 +613,54 @@ namespace api.Migrations
                     b.ToTable("userTokens");
                 });
 
+            modelBuilder.Entity("deathSite.Model.PaymentInvoice", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PaymentGateway")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TrackingNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("TransactionDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("TransactionType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("PaymentInvoices");
+                });
+
             modelBuilder.Entity("CondolenceMessage", b =>
                 {
                     b.HasOne("api.Model.Deceased", "Deceased")
@@ -670,6 +717,17 @@ namespace api.Migrations
                     b.Navigation("Package");
                 });
 
+            modelBuilder.Entity("deathSite.Model.PaymentInvoice", b =>
+                {
+                    b.HasOne("api.Model.User", "User")
+                        .WithMany("PaymentInvoices")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("api.Model.AdminModel.Tag", b =>
                 {
                     b.Navigation("ShahidTags");
@@ -695,6 +753,8 @@ namespace api.Migrations
                     b.Navigation("CondolenceMessages");
 
                     b.Navigation("Deceaseds");
+
+                    b.Navigation("PaymentInvoices");
                 });
 #pragma warning restore 612, 618
         }

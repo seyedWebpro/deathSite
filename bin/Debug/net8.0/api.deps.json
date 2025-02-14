@@ -24,8 +24,7 @@
           "System.ServiceModel.Http": "8.1.1",
           "System.ServiceModel.NetTcp": "8.1.1",
           "System.ServiceModel.Primitives": "8.1.1",
-          "System.ServiceModel.Security": "6.0.0",
-          "ZarinPal": "3.0.1"
+          "System.ServiceModel.Security": "6.0.0"
         },
         "runtime": {
           "api.dll": {}
@@ -1650,22 +1649,6 @@
           "System.Threading": "4.3.0",
           "System.Xml.ReaderWriter": "4.3.0"
         }
-      },
-      "ZarinPal/3.0.1": {
-        "runtime": {
-          "lib/netcoreapp2.2/Dto.dll": {
-            "assemblyVersion": "1.0.0.0",
-            "fileVersion": "1.0.0.0"
-          },
-          "lib/netcoreapp2.2/Service.dll": {
-            "assemblyVersion": "1.0.0.0",
-            "fileVersion": "1.0.0.0"
-          },
-          "lib/netcoreapp2.2/ZarinPal.dll": {
-            "assemblyVersion": "3.0.0.0",
-            "fileVersion": "3.0.0.0"
-          }
-        }
       }
     }
   },
@@ -2570,13 +2553,6 @@
       "sha512": "sha512-lJ8AxvkX7GQxpC6GFCeBj8ThYVyQczx2+f/cWHJU8tjS7YfI6Cv6bon70jVEgs2CiFbmmM8b9j1oZVx0dSI2Ww==",
       "path": "system.xml.xmldocument/4.3.0",
       "hashPath": "system.xml.xmldocument.4.3.0.nupkg.sha512"
-    },
-    "ZarinPal/3.0.1": {
-      "type": "package",
-      "serviceable": true,
-      "sha512": "sha512-1XPTvVdTa+ywa61JOK7TXVNqzHfwg/8bnMqKh9ISvHWk8HEhhrFXhuC/F5c/xDz9smay7254gD6T4WicgS+FeQ==",
-      "path": "zarinpal/3.0.1",
-      "hashPath": "zarinpal.3.0.1.nupkg.sha512"
     }
   }
 }

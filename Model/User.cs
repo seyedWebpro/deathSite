@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using api.Model.AdminModel;
+using deathSite.Model;
 
 namespace api.Model
 {
@@ -38,6 +39,9 @@ namespace api.Model
     public List<Deceased> Deceaseds { get; set; } = new List<Deceased>();
 
     public List<CondolenceMessage> CondolenceMessages { get; set; } = new List<CondolenceMessage>();
+
+     // مجموعه فاکتورهای پرداخت مربوط به کاربر (رابطه یک به چند)
+    public ICollection<PaymentInvoice> PaymentInvoices { get; set; } = new List<PaymentInvoice>();
 }
 
 }

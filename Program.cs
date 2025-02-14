@@ -2,6 +2,9 @@ using System.Text;
 using api.Context;
 using api.Middleware;
 using api.Services;
+using deathSite.Services.Payment;
+using deathSite.View.PaymentMelat;
+using deathSite.View.PaymentParsian;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -123,6 +126,9 @@ builder.Services.AddScoped<IEmailService, EmailService>();
 
 builder.Services.AddScoped<IFileUploadService, FileUploadService>();
 
+builder.Services.AddScoped<IMelatPaymentService, MelatPaymentService>();
+
+builder.Services.AddScoped<IParsianPaymentService, ParsianPaymentService>();
 
 var app = builder.Build();
 
@@ -137,7 +143,6 @@ app.UseDeveloperExceptionPage();
         c.DocExpansion(DocExpansion.None);
     });
 // }
-
 
 app.UseHttpsRedirection();
 

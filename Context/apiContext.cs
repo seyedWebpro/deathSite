@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using api.Model;
 using api.Model.AdminModel;
+using deathSite.Model;
 using Microsoft.EntityFrameworkCore;
 
 namespace api.Context
@@ -26,6 +27,7 @@ namespace api.Context
         public DbSet<News> News { get; set; }
         public DbSet<Banner> Banners { get; set; }
         public DbSet<ContactMeForm> ContactMeForms { get; set; }
+        public DbSet<PaymentInvoice> PaymentInvoices { get; set; }
 
         public apiContext(DbContextOptions<apiContext> options) : base(options)
         {
@@ -76,7 +78,14 @@ namespace api.Context
         .WithMany(d => d.CondolenceMessages)
         .HasForeignKey(cm => cm.DeceasedId)
         .OnDelete(DeleteBehavior.Cascade);  // حذف خودکار پیام‌ها هنگام حذف متوفی
-        }
 
+         // تعریف رابطه بین PaymentInvoice و User
+            modelBuilder.Entity<PaymentInvoice>()
+                .HasOne(pi => pi.User)
+                .WithMany(u => u.PaymentInvoices)
+                .HasForeignKey(pi => pi.UserId)
+                .OnDelete(DeleteBehavior.Restrict); // یا هر رفتار حذف مدنظر
+        }
+        
     }
 }

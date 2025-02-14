@@ -1,25 +1,31 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\hero-pc\\Desktop\\DeadWebsit\\api\\api.csproj": {}
+    "D:\\DeadWebsit\\api\\deathSite\\api.csproj": {}
   },
   "projects": {
-    "C:\\Users\\hero-pc\\Desktop\\DeadWebsit\\api\\api.csproj": {
+    "D:\\DeadWebsit\\api\\deathSite\\api.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\hero-pc\\Desktop\\DeadWebsit\\api\\api.csproj",
+        "projectUniqueName": "D:\\DeadWebsit\\api\\deathSite\\api.csproj",
         "projectName": "api",
-        "projectPath": "C:\\Users\\hero-pc\\Desktop\\DeadWebsit\\api\\api.csproj",
-        "packagesPath": "C:\\Users\\hero-pc\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\hero-pc\\Desktop\\DeadWebsit\\api\\obj\\",
+        "projectPath": "D:\\DeadWebsit\\api\\deathSite\\api.csproj",
+        "packagesPath": "C:\\Users\\seyed\\.nuget\\packages\\",
+        "outputPath": "D:\\DeadWebsit\\api\\deathSite\\obj\\",
         "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
         "configFilePaths": [
-          "C:\\Users\\hero-pc\\AppData\\Roaming\\NuGet\\NuGet.Config"
+          "C:\\Users\\seyed\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "net8.0"
         ],
         "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -110,10 +116,6 @@
             "System.ServiceModel.Security": {
               "target": "Package",
               "version": "[6.0.0, )"
-            },
-            "Zarinpal": {
-              "target": "Package",
-              "version": "[3.0.1, )"
             }
           },
           "imports": [
@@ -135,7 +137,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.404/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.401/PortableRuntimeIdentifierGraph.json"
         }
       }
     }
