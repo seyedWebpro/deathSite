@@ -1,6 +1,18 @@
 {
   "Files": [
     {
+      "Id": "D:\\DeadWebsit\\api\\deathSite\\wwwroot\\uploads\\menus\\0\\images\\38e2f975-db80-49c2-9652-7e4a0d71f96a.jpg",
+      "PackagePath": "staticwebassets\\uploads\\menus\\0\\images\\38e2f975-db80-49c2-9652-7e4a0d71f96a.jpg"
+    },
+    {
+      "Id": "D:\\DeadWebsit\\api\\deathSite\\wwwroot\\uploads\\menus\\0\\images\\6292ead6-9953-4a80-a403-b2a734dfb0cc.jpg",
+      "PackagePath": "staticwebassets\\uploads\\menus\\0\\images\\6292ead6-9953-4a80-a403-b2a734dfb0cc.jpg"
+    },
+    {
+      "Id": "D:\\DeadWebsit\\api\\deathSite\\wwwroot\\uploads\\menus\\0\\images\\f8375795-e932-40cb-8cee-0d3d872a48ec.jpg",
+      "PackagePath": "staticwebassets\\uploads\\menus\\0\\images\\f8375795-e932-40cb-8cee-0d3d872a48ec.jpg"
+    },
+    {
       "Id": "D:\\DeadWebsit\\api\\deathSite\\wwwroot\\uploads\\news\\2\\images\\26fa8f83-909b-47de-983e-a2c15efaacdb.jpg",
       "PackagePath": "staticwebassets\\uploads\\news\\2\\images\\26fa8f83-909b-47de-983e-a2c15efaacdb.jpg"
     },
