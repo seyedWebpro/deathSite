@@ -10,6 +10,7 @@ namespace api.View.PaymentParsian
         public long Amount { get; set; }
         public long OrderId { get; set; }
         public string Description { get; set; }
+
     }
 
 }
