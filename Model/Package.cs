@@ -3,42 +3,43 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
+using deathSite.Model;
 
 namespace api.Model
 {
-    public class Package
-{
-    public int Id { get; set; }
+public class Package
+    {
+        public int Id { get; set; }
 
-    public string Name { get; set; }
+        public string Name { get; set; }
 
-    public string Duration { get; set; }
+        public string Duration { get; set; } // مدت زمان
 
-    public decimal Price { get; set; }
+        public decimal Price { get; set; }
 
-    public decimal RenewalFee { get; set; } // مبلغ تمدید دوره ای
+        public decimal RenewalFee { get; set; }
 
-    public string ValidityPeriod { get; set; } // مدت زمان اعتبار به روز
+        public string ValidityPeriod { get; set; } // مدت اعتبار
 
-    public int ImageCount { get; set; } // تعداد تصاویر
+        // محدودیت‌های پکیج
+        public int ImageCount { get; set; }
+        public int VideoCount { get; set; }
+        public int NotificationCount { get; set; }
+        public int AudioFileLimit { get; set; }
 
-    public int VideoCount { get; set; } // تعداد ویدیو
+        // امکانات پکیج
+        public bool BarcodeEnabled { get; set; }
+        public bool DisplayEnabled { get; set; }
+        public bool TemplateSelectionEnabled { get; set; }
+        public bool CondolenceMessageEnabled { get; set; }
+        public bool VisitorContentSubmissionEnabled { get; set; }
+        public bool LocationAndNavigationEnabled { get; set; }
+        public bool SharingEnabled { get; set; }
+        public bool File360DegreeEnabled { get; set; }
+        public bool UpdateCapabilityEnabled { get; set; }
 
-    public int NotificationCount { get; set; } // تعداد اعلامیه
-
-    public int AudioFileLimit { get; set; } // تعداد مجاز فایل صوتی افراد
-
-    public bool BarcodeEnabled { get; set; } // امکان ایجاد بارکد
-    public bool DisplayEnabled { get; set; } // امکان نمایش محتوا
-    public bool TemplateSelectionEnabled { get; set; } // قابلیت انتخاب قالب
-    public bool CondolenceMessageEnabled { get; set; } // قابلیت قراردادن پیام تسلیت
-    public bool VisitorContentSubmissionEnabled { get; set; } // قابلیت ارسال محتوا از سوی بازدید کننده
-    public bool LocationAndNavigationEnabled { get; set; } // قابلیت لوکیشن و مسیریابی
-    public bool SharingEnabled { get; set; } // قابلیت به اشتراک گذاری
-    public bool File360DegreeEnabled { get; set; } // مجوز قراردادن فایل 360 درجه
-    public bool UpdateCapabilityEnabled { get; set; } // قابلیت به روز رسانی
-
-    public ICollection<User> Users { get; set; } // برای مدیریت کاربران که این پکیج را دارند
-}
+        // روابط
+        public ICollection<UserPackage> UserPackages { get; set; }
+    }
 
 }

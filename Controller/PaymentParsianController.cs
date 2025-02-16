@@ -41,115 +41,56 @@ namespace api.Controllers
             return BadRequest(new { Message = result.Message });
         }
 
-        // [HttpPost("Callback")]
-        // public async Task<IActionResult> Callback()
-        // {
-        //     try
-        //     {
-        //         // دریافت پارامترهای دیگر از فرم
-        //         var status = Convert.ToInt16(Request.Form["status"]);
-        //         var token = Convert.ToInt64(Request.Form["Token"]);
-        //         var orderId = Convert.ToInt64(Request.Form["OrderId"]);
-        //         var amount = Request.Form["Amount"];
-        //         var terminalNo = Convert.ToInt32(Request.Form["TerminalNo"]);
-        //         var rrn = Convert.ToInt64(Request.Form["RRN"]);
-
-        //         // آدرس ثابت ریدایرکت و فقط توکن در URL
-        //         var redirectBuilder = new UriBuilder("https://new.tarhimcode.ir/payment-result");  // آدرس ثابت
-        //         var query = HttpUtility.ParseQueryString(redirectBuilder.Query);
-        //         query["token"] = token.ToString();  // فقط توکن را اضافه کنید
-        //         redirectBuilder.Query = query.ToString();
-
-        //         // در صورت موفق بودن پرداخت
-        //         if (status == 0 && rrn > 0)
-        //         {
-        //             var verifyModel = new PaymentVerifyModel { Token = token };
-        //             var result = await _paymentService.VerifyPaymentAsync(verifyModel);
-
-        //             if (result.Success)
-        //             {
-        //                 return Redirect(redirectBuilder.ToString()); // فقط توکن به آدرس ریدایرکت اضافه می‌شود
-        //             }
-
-        //             return BadRequest(new
-        //             {
-        //                 Success = false,
-        //                 Message = "پرداخت ناموفق",
-        //                 Status = status,
-        //                 Token = token
-        //             });
-        //         }
-
-        //         // در صورتی که پرداخت ناموفق باشد
-        //         return BadRequest(new
-        //         {
-        //             Success = false,
-        //             Message = "پرداخت ناموفق",
-        //             Status = status,
-        //             Token = token
-        //         });
-        //     }
-        //     catch (Exception ex)
-        //     {
-        //         // در صورت خطا، به صفحه خطا هدایت می‌کنیم
-        //         return Redirect($"https://new.tarhimcode.ir/payment-result?status=error&message={Uri.EscapeDataString(ex.Message)}");
-        //     }
-        // }
 
         // ری دایرکت کاربر به صفحه موفق یا ناموفق
 
-[HttpPost("Callback")]
-public async Task<IActionResult> Callback()
-{
-    try
-    {
-        // دریافت پارامترهای دیگر از فرم
-        var status = Convert.ToInt16(Request.Form["status"]);
-        var token = Convert.ToInt64(Request.Form["Token"]);
-        var orderId = Convert.ToInt64(Request.Form["OrderId"]);
-        var amount = Request.Form["Amount"];
-        var terminalNo = Convert.ToInt32(Request.Form["TerminalNo"]);
-        var rrn = Convert.ToInt64(Request.Form["RRN"]);
-
-        // آدرس‌های ریدایرکت
-        var successRedirect = new UriBuilder("https://new.tarhimcode.ir/payment-success");
-        var failureRedirect = new UriBuilder("https://new.tarhimcode.ir/payment-failure");
-
-        var query = HttpUtility.ParseQueryString(string.Empty);
-        query["token"] = token.ToString();  // اضافه کردن توکن برای نمایش در صفحه
-
-        // در صورت موفق بودن پرداخت
-        if (status == 0 && rrn > 0)
+        [HttpPost("Callback")]
+        public async Task<IActionResult> Callback()
         {
-            var verifyModel = new PaymentVerifyModel { Token = token };
-            var result = await _paymentService.VerifyPaymentAsync(verifyModel);
-
-            if (result.Success)
+            try
             {
-                successRedirect.Query = query.ToString();
-                return Redirect(successRedirect.ToString()); // هدایت به صفحه موفقیت
+                // دریافت پارامترهای دیگر از فرم
+                var status = Convert.ToInt16(Request.Form["status"]);
+                var token = Convert.ToInt64(Request.Form["Token"]);
+                var orderId = Convert.ToInt64(Request.Form["OrderId"]);
+                var amount = Request.Form["Amount"];
+                var terminalNo = Convert.ToInt32(Request.Form["TerminalNo"]);
+                var rrn = Convert.ToInt64(Request.Form["RRN"]);
+
+                // آدرس‌های ریدایرکت
+                var successRedirect = new UriBuilder("https://new.tarhimcode.ir/payment-success");
+                var failureRedirect = new UriBuilder("https://new.tarhimcode.ir/payment-failure");
+
+                var query = HttpUtility.ParseQueryString(string.Empty);
+                query["token"] = token.ToString();  // اضافه کردن توکن برای نمایش در صفحه
+
+                // در صورت موفق بودن پرداخت
+                if (status == 0 && rrn > 0)
+                {
+                    var verifyModel = new PaymentVerifyModel { Token = token };
+                    var result = await _paymentService.VerifyPaymentAsync(verifyModel);
+
+                    if (result.Success)
+                    {
+                        successRedirect.Query = query.ToString();
+                        return Redirect(successRedirect.ToString()); // هدایت به صفحه موفقیت
+                    }
+                }
+
+                // در صورتی که پرداخت ناموفق باشد یا وریفای شکست بخورد
+                failureRedirect.Query = query.ToString();
+                return Redirect(failureRedirect.ToString());
+            }
+            catch (Exception ex)
+            {
+                // در صورت بروز خطا، به صفحه ناموفق هدایت می‌کنیم و پیام خطا را هم اضافه می‌کنیم
+                var failureRedirect = new UriBuilder("https://new.tarhimcode.ir/payment-failure");
+                var query = HttpUtility.ParseQueryString(string.Empty);
+                query["message"] = Uri.EscapeDataString(ex.Message);
+                failureRedirect.Query = query.ToString();
+                return Redirect(failureRedirect.ToString());
             }
         }
 
-        // در صورتی که پرداخت ناموفق باشد یا وریفای شکست بخورد
-        failureRedirect.Query = query.ToString();
-        return Redirect(failureRedirect.ToString());
-    }
-    catch (Exception ex)
-    {
-        // در صورت بروز خطا، به صفحه ناموفق هدایت می‌کنیم و پیام خطا را هم اضافه می‌کنیم
-        var failureRedirect = new UriBuilder("https://new.tarhimcode.ir/payment-failure");
-        var query = HttpUtility.ParseQueryString(string.Empty);
-        query["message"] = Uri.EscapeDataString(ex.Message);
-        failureRedirect.Query = query.ToString();
-        return Redirect(failureRedirect.ToString());
     }
 }
-
-
-
-    }
-}
-
-
-

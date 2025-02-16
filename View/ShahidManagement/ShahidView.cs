@@ -29,15 +29,15 @@ public class ShahidView
 
     public string BurialSiteLink { get; set; }
 
-        [Required(ErrorMessage = "ادرس رسانه الزامی است.")]
+    [Required(ErrorMessage = "ادرس رسانه الزامی است.")]
     [StringLength(200, ErrorMessage = "ادرس رسانه نمی‌تواند بیشتر از 200 کاراکتر باشد.")]
     public string MediaLink { get; set; } // لینک رسانه
 
-        [Required(ErrorMessage = "ادرس محل شهادت الزامی است.")]
+    [Required(ErrorMessage = "ادرس محل شهادت الزامی است.")]
     [StringLength(200, ErrorMessage = "ادرس محل شهادت نمی‌تواند بیشتر از 200 کاراکتر باشد.")]
     public string DeadPlaceLink { get; set; } // لینک آدرس محل شهدات
 
-        [Required(ErrorMessage = "لینک زیارت مجازی الزامی است.")]
+    [Required(ErrorMessage = "لینک زیارت مجازی الزامی است.")]
     [StringLength(200, ErrorMessage = " لینک زیارت مجازی نمی‌تواند بیشتر از 200 کاراکتر باشد.")]
     public string virtualLink { get; set; } // لینک زیارت مجازی
 
@@ -60,10 +60,10 @@ public class ShahidView
 
     [JsonIgnore]
     public List<string> PhotoUrls { get; set; } = new List<string>(); // لیست عکس‌ها
-    
+
     [JsonIgnore]
     public List<string> VideoUrls { get; set; } = new List<string>(); // لیست ویدیوها
-    
+
     [JsonIgnore]
     public List<string> VoiceUrls { get; set; } = new List<string>(); // لیست ویس‌ها
 
@@ -93,4 +93,5 @@ public class ShahidView
 
     [StringLength(1000, ErrorMessage = "خاطرات نمی‌تواند بیشتر از 1000 کاراکتر باشد.")]
     public string Memories { get; set; } // خاطرات
+
 }

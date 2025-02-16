@@ -12,8 +12,8 @@ using api.Context;
 namespace api.Migrations
 {
     [DbContext(typeof(apiContext))]
-    [Migration("20250202151055_editFilepatNewa")]
-    partial class editFilepatNewa
+    [Migration("20250216135946_Init")]
+    partial class Init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -116,6 +116,9 @@ namespace api.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("IconImagePath")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Link")
                         .IsRequired()
@@ -227,6 +230,39 @@ namespace api.Migrations
                     b.ToTable("blogs");
                 });
 
+            modelBuilder.Entity("api.Model.ContactMeForm", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FullName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PhoneNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Subject")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ContactMeForms");
+                });
+
             modelBuilder.Entity("api.Model.Deceased", b =>
                 {
                     b.Property<int>("Id")
@@ -260,9 +296,6 @@ namespace api.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("OwnerId")
-                        .HasColumnType("int");
-
                     b.Property<string>("PhotoUrls")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -274,6 +307,9 @@ namespace api.Migrations
                     b.Property<DateTime>("PublishedDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
                     b.Property<string>("VideoUrls")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -284,7 +320,7 @@ namespace api.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("OwnerId");
+                    b.HasIndex("UserId");
 
                     b.ToTable("Deceaseds");
                 });
@@ -351,8 +387,7 @@ namespace api.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("NotificationCount")
                         .HasColumnType("int");
@@ -477,6 +512,9 @@ namespace api.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
                     b.Property<string>("VideoUrls")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -498,6 +536,8 @@ namespace api.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("shahids");
                 });
@@ -528,9 +568,6 @@ namespace api.Migrations
                     b.Property<string>("Email")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("PackageId")
-                        .HasColumnType("int");
-
                     b.Property<string>("firstName")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -555,8 +592,6 @@ namespace api.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("PackageId");
 
                     b.ToTable("users");
                 });
@@ -584,6 +619,105 @@ namespace api.Migrations
                     b.ToTable("userTokens");
                 });
 
+            modelBuilder.Entity("deathSite.Model.PaymentInvoice", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<long>("OrderId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("PaymentGateway")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TrackingNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("TransactionDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("TransactionType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("UserPackageId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("UserPackageId");
+
+                    b.ToTable("PaymentInvoices");
+                });
+
+            modelBuilder.Entity("deathSite.Model.UserPackage", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("ExpiryDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("PackageId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("PurchaseDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("UsedAudioFileCount")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UsedImageCount")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UsedNotificationCount")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UsedVideoCount")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PackageId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserPackages");
+                });
+
             modelBuilder.Entity("CondolenceMessage", b =>
                 {
                     b.HasOne("api.Model.Deceased", "Deceased")
@@ -604,12 +738,24 @@ namespace api.Migrations
 
             modelBuilder.Entity("api.Model.Deceased", b =>
                 {
-                    b.HasOne("api.Model.User", "Owner")
+                    b.HasOne("api.Model.User", "User")
                         .WithMany("Deceaseds")
-                        .HasForeignKey("OwnerId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
-                    b.Navigation("Owner");
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("api.Model.Shahid", b =>
+                {
+                    b.HasOne("api.Model.User", "User")
+                        .WithMany("Shahids")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("api.Model.ShahidTag", b =>
@@ -631,13 +777,41 @@ namespace api.Migrations
                     b.Navigation("Tag");
                 });
 
-            modelBuilder.Entity("api.Model.User", b =>
+            modelBuilder.Entity("deathSite.Model.PaymentInvoice", b =>
+                {
+                    b.HasOne("api.Model.User", "User")
+                        .WithMany("PaymentInvoices")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("deathSite.Model.UserPackage", "UserPackage")
+                        .WithMany("PaymentInvoices")
+                        .HasForeignKey("UserPackageId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("User");
+
+                    b.Navigation("UserPackage");
+                });
+
+            modelBuilder.Entity("deathSite.Model.UserPackage", b =>
                 {
                     b.HasOne("api.Model.Package", "Package")
-                        .WithMany("Users")
-                        .HasForeignKey("PackageId");
+                        .WithMany("UserPackages")
+                        .HasForeignKey("PackageId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("api.Model.User", "User")
+                        .WithMany("UserPackages")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.Navigation("Package");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("api.Model.AdminModel.Tag", b =>
@@ -652,7 +826,7 @@ namespace api.Migrations
 
             modelBuilder.Entity("api.Model.Package", b =>
                 {
-                    b.Navigation("Users");
+                    b.Navigation("UserPackages");
                 });
 
             modelBuilder.Entity("api.Model.Shahid", b =>
@@ -665,6 +839,17 @@ namespace api.Migrations
                     b.Navigation("CondolenceMessages");
 
                     b.Navigation("Deceaseds");
+
+                    b.Navigation("PaymentInvoices");
+
+                    b.Navigation("Shahids");
+
+                    b.Navigation("UserPackages");
+                });
+
+            modelBuilder.Entity("deathSite.Model.UserPackage", b =>
+                {
+                    b.Navigation("PaymentInvoices");
                 });
 #pragma warning restore 612, 618
         }

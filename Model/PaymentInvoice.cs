@@ -11,8 +11,13 @@ namespace deathSite.Model
     {
         public int Id { get; set; }
 
+         public int UserId { get; set; }
+
+        public int? UserPackageId { get; set; }  // می‌تواند null باشد برای پرداخت‌های غیر مرتبط با پکیج
+
+
         // نام کاربر (یا شناسه کاربر)
-        public string UserName { get; set; }
+        public string? UserName { get; set; }
 
         // تاریخ تراکنش
         public DateTime TransactionDate { get; set; }
@@ -35,10 +40,11 @@ namespace deathSite.Model
         // توضیحات اضافی (اختیاری)
         public string Description { get; set; }
 
-         // کلید خارجی به کاربر
-        public int UserId { get; set; }
+        // شناسه سفارش (در صورت نیاز به ردیابی تراکنش با سفارش خاص)
+        public long OrderId { get; set; }
 
-        // پراپرتی ناوبری به مدل User
-        public virtual User User { get; set; }
+       public User User { get; set; }
+        public UserPackage? UserPackage { get; set; }  // رابطه با پکیج کاربر (اختیاری)
+        
     }
 }

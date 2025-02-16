@@ -423,7 +423,6 @@ C:\Users\hero-pc\Desktop\DeadWebsit\api\bin\Debug\net8.0\zh-Hans\System.ServiceM
 C:\Users\hero-pc\Desktop\DeadWebsit\api\bin\Debug\net8.0\zh-Hant\System.ServiceModel.NetTcp.resources.dll
 C:\Users\hero-pc\Desktop\DeadWebsit\api\bin\Debug\net8.0\ServiceReference2\dotnet-svcutil.params.json
 D:\DeadWebsit\api\deathSite\bin\Debug\net8.0\appsettings.Development.json
-D:\DeadWebsit\api\deathSite\bin\Debug\net8.0\appsettings.json
 D:\DeadWebsit\api\deathSite\bin\Debug\net8.0\ServiceReference1\dotnet-svcutil.params.json
 D:\DeadWebsit\api\deathSite\bin\Debug\net8.0\ServiceReference2\dotnet-svcutil.params.json
 D:\DeadWebsit\api\deathSite\bin\Debug\net8.0\ServiceReference\dotnet-svcutil.params.json
@@ -673,3 +672,4 @@ D:\DeadWebsit\api\deathSite\obj\Debug\net8.0\refint\api.dll
 D:\DeadWebsit\api\deathSite\obj\Debug\net8.0\api.pdb
 D:\DeadWebsit\api\deathSite\obj\Debug\net8.0\api.genruntimeconfig.cache
 D:\DeadWebsit\api\deathSite\obj\Debug\net8.0\ref\api.dll
+D:\DeadWebsit\api\deathSite\bin\Debug\net8.0\appsettings.json

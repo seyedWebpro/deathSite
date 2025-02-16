@@ -23,43 +23,43 @@ namespace api.Services
         _context = context;
     }
 
- public string GenerateJwtToken(User user)
+public string GenerateJwtToken(User user)
+{
+    var claims = new[]
     {
-        var claims = new[]
-        {
-            new Claim("firstName", user.firstName),
-            new Claim("lastName", user.lastName),
-            new Claim("phoneNumber", user.phoneNumber),
-            new Claim("role", user.role),
-            new Claim("packageId", user.PackageId?.ToString() ?? string.Empty),
-            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
-        };
+        new Claim("UserId", user.Id.ToString()), // اضافه کردن شناسه کاربر
+        new Claim("firstName", user.firstName),
+        new Claim("lastName", user.lastName),
+        new Claim("phoneNumber", user.phoneNumber),
+        new Claim("role", user.role),
+        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+    };
 
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
-        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+    var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
+    var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-        var token = new JwtSecurityToken(
-            issuer: _configuration["Jwt:Issuer"],
-            audience: _configuration["Jwt:Issuer"],
-            claims: claims,
-            expires: DateTime.Now.AddDays(7),
-            signingCredentials: creds);
+    var token = new JwtSecurityToken(
+        issuer: _configuration["Jwt:Issuer"],
+        audience: _configuration["Jwt:Issuer"],
+        claims: claims,
+        expires: DateTime.Now.AddDays(7),
+        signingCredentials: creds);
 
-        var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
+    var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
 
-        // ثبت توکن در پایگاه داده
-        var userToken = new UserToken
-        {
-            Token = tokenString,
-            UserId = user.Id,
-            IsExpired = false // می‌توانید وضعیت انقضا را به دلخواه تنظیم کنید
-        };
+    // ذخیره توکن در پایگاه داده
+    var userToken = new UserToken
+    {
+        Token = tokenString,
+        UserId = user.Id,
+        IsExpired = false
+    };
 
-        _context.userTokens.Add(userToken);
-        _context.SaveChanges(); // ذخیره تغییرات در پایگاه داده
+    _context.userTokens.Add(userToken);
+    _context.SaveChanges();
 
-        return tokenString;
-    }
+    return tokenString;
+}
 
         public string HashPassword(string password)
         {

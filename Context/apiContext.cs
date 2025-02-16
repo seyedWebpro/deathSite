@@ -28,6 +28,7 @@ namespace api.Context
         public DbSet<Banner> Banners { get; set; }
         public DbSet<ContactMeForm> ContactMeForms { get; set; }
         public DbSet<PaymentInvoice> PaymentInvoices { get; set; }
+        public DbSet<UserPackage> UserPackages { get; set; }
 
         public apiContext(DbContextOptions<apiContext> options) : base(options)
         {
@@ -36,56 +37,77 @@ namespace api.Context
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            // تعریف رابطه بین User و Package
-            modelBuilder.Entity<User>()
-                .HasOne(u => u.Package) // هر کاربر یک پکیج دارد
-                .WithMany(p => p.Users) // هر پکیج می‌تواند به چندین کاربر تعلق داشته باشد
-                .HasForeignKey(u => u.PackageId); // کلید خارجی در User
+            // 1. تعریف رابطه بین UserPackage و User
+            modelBuilder.Entity<UserPackage>()
+                .HasOne(up => up.User)
+                .WithMany(u => u.UserPackages)
+                .HasForeignKey(up => up.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
 
-            // تعریف کلید مرکب برای ShahidTag
+            // 2. تعریف رابطه بین UserPackage و Package
+            modelBuilder.Entity<UserPackage>()
+                .HasOne(up => up.Package)
+                .WithMany(p => p.UserPackages)
+                .HasForeignKey(up => up.PackageId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // 3. تعریف کلید مرکب برای ShahidTag
             modelBuilder.Entity<ShahidTag>()
                 .HasKey(st => new { st.ShahidId, st.TagId });
 
-            // تعریف رابطه بین Shahid و ShahidTag
+            // 4. تعریف رابطه بین Shahid و ShahidTag
             modelBuilder.Entity<ShahidTag>()
                 .HasOne(st => st.Shahid)
                 .WithMany(s => s.ShahidTags)
                 .HasForeignKey(st => st.ShahidId);
 
-            // تعریف رابطه بین Tag و ShahidTag
+            // 5. تعریف رابطه بین Tag و ShahidTag
             modelBuilder.Entity<ShahidTag>()
                 .HasOne(st => st.Tag)
                 .WithMany(t => t.ShahidTags)
                 .HasForeignKey(st => st.TagId);
 
-           // رابطه بین Deceased و User
-    modelBuilder.Entity<Deceased>()
-        .HasOne(d => d.Owner)
-        .WithMany(u => u.Deceaseds)
-        .HasForeignKey(d => d.OwnerId)
-        .OnDelete(DeleteBehavior.Restrict); // برای جلوگیری از حذف خودکار متوفی در صورت حذف کاربر
+            // 6. تعریف رابطه بین Deceased و User
+            modelBuilder.Entity<Deceased>()
+                .HasOne(d => d.User)
+                .WithMany(u => u.Deceaseds)
+                .HasForeignKey(d => d.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
 
-     // رابطه بین CondolenceMessage و User
-    modelBuilder.Entity<CondolenceMessage>()
-        .HasOne(cm => cm.User)
-        .WithMany(u => u.CondolenceMessages)
-        .HasForeignKey(cm => cm.UserId)
-        .OnDelete(DeleteBehavior.Restrict);  // تغییر رفتار در صورت حذف کاربر
+            // 7. تعریف رابطه بین CondolenceMessage و User
+            modelBuilder.Entity<CondolenceMessage>()
+                .HasOne(cm => cm.User)
+                .WithMany(u => u.CondolenceMessages)
+                .HasForeignKey(cm => cm.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
 
-    // رابطه بین CondolenceMessage و Deceased
-    modelBuilder.Entity<CondolenceMessage>()
-        .HasOne(cm => cm.Deceased)
-        .WithMany(d => d.CondolenceMessages)
-        .HasForeignKey(cm => cm.DeceasedId)
-        .OnDelete(DeleteBehavior.Cascade);  // حذف خودکار پیام‌ها هنگام حذف متوفی
+            // 8. تعریف رابطه بین CondolenceMessage و Deceased
+            modelBuilder.Entity<CondolenceMessage>()
+                .HasOne(cm => cm.Deceased)
+                .WithMany(d => d.CondolenceMessages)
+                .HasForeignKey(cm => cm.DeceasedId)
+                .OnDelete(DeleteBehavior.Cascade);
 
-         // تعریف رابطه بین PaymentInvoice و User
+            // 9. تعریف رابطه بین PaymentInvoice و User
             modelBuilder.Entity<PaymentInvoice>()
                 .HasOne(pi => pi.User)
                 .WithMany(u => u.PaymentInvoices)
                 .HasForeignKey(pi => pi.UserId)
-                .OnDelete(DeleteBehavior.Restrict); // یا هر رفتار حذف مدنظر
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // 10. تعریف رابطه بین PaymentInvoice و UserPackage (اختیاری)
+            modelBuilder.Entity<PaymentInvoice>()
+                .HasOne(pi => pi.UserPackage)
+                .WithMany(up => up.PaymentInvoices)
+                .HasForeignKey(pi => pi.UserPackageId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // 11. تعریف رابطه بین Shahid و User
+            modelBuilder.Entity<Shahid>()
+                .HasOne(s => s.User)
+                .WithMany(u => u.Shahids)
+                .HasForeignKey(s => s.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
-        
     }
 }

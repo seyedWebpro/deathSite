@@ -35,6 +35,10 @@ namespace api.Model
         public string PoemVerseOne { get; set; } // بیت اول شعر
         public string PoemVerseTwo { get; set; } // بیت دوم شعر
 
+        // شناسه کاربر
+        public int UserId { get; set; }
+        public User User { get; set; }
+
         // رابطه Many-to-Many
         public List<ShahidTag> ShahidTags { get; set; } = new List<ShahidTag>();
     }
