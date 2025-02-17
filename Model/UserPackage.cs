@@ -27,6 +27,6 @@ namespace deathSite.Model
         // روابط
         public User User { get; set; }
         public Package Package { get; set; }
-        public ICollection<PaymentInvoice> PaymentInvoices { get; set; }
+        public ICollection<Factors> Factors { get; set; }
     }
 }

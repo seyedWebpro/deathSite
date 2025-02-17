@@ -450,10 +450,169 @@
 
 
 // خواندن اطلاعات فرم دیتا بعد از پرداخت کاربر
+// using System;
+// using System.ServiceModel;
+// using System.Threading.Tasks;
+// using api.View.PaymentMelat;
+// using Microsoft.Extensions.Configuration;
+// using Microsoft.Extensions.Logging;
+// using ServiceReference;
+
+// namespace deathSite.Services.Payment
+// {
+//     public class MelatPaymentService : IMelatPaymentService
+//     {
+//         private readonly ILogger<MelatPaymentService> _logger;
+//         private readonly PaymentGatewayClient _client;
+
+//         private readonly long _terminalID;
+//         private readonly string _username;
+//         private readonly string _password;
+//         private readonly string _callBackUrl;
+
+//         public MelatPaymentService(ILogger<MelatPaymentService> logger, IConfiguration configuration)
+//         {
+//             _logger = logger;
+
+//             // دریافت تنظیمات از IConfiguration
+//             _terminalID = configuration.GetValue<long>("MelatSettings:TerminalID");
+//             _username = configuration["MelatSettings:Username"];
+//             _password = configuration["MelatSettings:Password"];
+//             // اطمینان حاصل کنید که CallBackUrl به صورت کامل و صحیح (مثلاً با مسیر کامل API) تنظیم شده است
+//             _callBackUrl = configuration["MelatSettings:CallBackUrl"];
+
+//             var endpoint = new EndpointAddress("https://bpm.shaparak.ir/pgwchannel/services/pgw?wsdl");
+//             var binding = new BasicHttpBinding
+//             {
+//                 Security = new BasicHttpSecurity
+//                 {
+//                     Mode = BasicHttpSecurityMode.Transport
+//                 }
+//             };
+
+//             _client = new PaymentGatewayClient(binding, endpoint);
+//         }
+
+//         public async Task<(bool Success, string Message, string RefId)> PayRequestAsync(PaymentRequestDto request)
+//         {
+//             try
+//             {
+//                 var localDate = DateTime.Now.ToString("yyyyMMdd");
+//                 var localTime = DateTime.Now.ToString("HHmmss");
+
+//                 var response = await _client.bpPayRequestAsync(
+//                     _terminalID,
+//                     _username,
+//                     _password,
+//                     request.OrderId,
+//                     request.Amount,
+//                     localDate,
+//                     localTime,
+//                     string.Empty,        // additionalData
+//                     _callBackUrl,        // استفاده از callback تنظیم‌شده در appsettings.json
+//                     request.PayerId,
+//                     string.Empty,        // mobileNo
+//                     string.Empty,        // encPan
+//                     string.Empty,        // panHiddenMode
+//                     string.Empty,        // cartItem
+//                     string.Empty         // enc
+//                 );
+
+//                 var resultCode = response.Body.@return;
+//                 _logger.LogInformation("bpPayRequest Response: {Response}", resultCode);
+//                 var responseParts = resultCode.Split(',');
+
+//                 if (responseParts[0] == "0")
+//                 {
+//                     var refId = responseParts[1];
+//                     return (true, "Request successful", refId);
+//                 }
+//                 else
+//                 {
+//                     return (false, $"Request failed, Code: {responseParts[0]}", null);
+//                 }
+//             }
+//             catch (Exception ex)
+//             {
+//                 _logger.LogError(ex, "Error in PayRequest");
+//                 return (false, ex.Message, null);
+//             }
+//         }
+
+//         public async Task<(bool Success, string Message)> VerifyRequestAsync(VerifyRequestDto request)
+//         {
+//             try
+//             {
+//                 var response = await _client.bpVerifyRequestAsync(
+//                     _terminalID,
+//                     _username,
+//                     _password,
+//                     request.OrderId,
+//                     request.SaleOrderId,
+//                     request.SaleReferenceId
+//                 );
+
+//                 var resultCode = response.Body.@return;
+//                 _logger.LogInformation("bpVerifyRequest Response: {Response}", resultCode);
+
+//                 if (resultCode == "0")
+//                 {
+//                     return (true, "Transaction verified successfully");
+//                 }
+//                 else
+//                 {
+//                     return (false, $"Verification failed, Code: {resultCode}");
+//                 }
+//             }
+//             catch (Exception ex)
+//             {
+//                 _logger.LogError(ex, "Error in VerifyRequest");
+//                 return (false, ex.Message);
+//             }
+//         }
+
+//         public async Task<(bool Success, string Message)> SettleRequestAsync(SettleRequestDto request)
+//         {
+//             try
+//             {
+//                 var response = await _client.bpSettleRequestAsync(
+//                     _terminalID,
+//                     _username,
+//                     _password,
+//                     request.OrderId,
+//                     request.SaleOrderId,
+//                     request.SaleReferenceId
+//                 );
+
+//                 var resultCode = response.Body.@return;
+//                 _logger.LogInformation("bpSettleRequest Response: {Response}", resultCode);
+
+//                 if (resultCode == "0")
+//                 {
+//                     return (true, "Settlement successful");
+//                 }
+//                 else
+//                 {
+//                     return (false, $"Settlement failed, Code: {resultCode}");
+//                 }
+//             }
+//             catch (Exception ex)
+//             {
+//                 _logger.LogError(ex, "Error in SettleRequest");
+//                 return (false, ex.Message);
+//             }
+//         }
+//     }
+// }
+
+// اصلاح سرویس و امکان تعویض ترمینال و بقیه موارد از پنل ادمین
+
 using System;
 using System.ServiceModel;
 using System.Threading.Tasks;
+using api.Context;
 using api.View.PaymentMelat;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using ServiceReference;
@@ -464,22 +623,12 @@ namespace deathSite.Services.Payment
     {
         private readonly ILogger<MelatPaymentService> _logger;
         private readonly PaymentGatewayClient _client;
+        private readonly apiContext _context; // اضافه کردن DbContext
 
-        private readonly long _terminalID;
-        private readonly string _username;
-        private readonly string _password;
-        private readonly string _callBackUrl;
-
-        public MelatPaymentService(ILogger<MelatPaymentService> logger, IConfiguration configuration)
+        public MelatPaymentService(ILogger<MelatPaymentService> logger, apiContext context)
         {
             _logger = logger;
-
-            // دریافت تنظیمات از IConfiguration
-            _terminalID = configuration.GetValue<long>("MelatSettings:TerminalID");
-            _username = configuration["MelatSettings:Username"];
-            _password = configuration["MelatSettings:Password"];
-            // اطمینان حاصل کنید که CallBackUrl به صورت کامل و صحیح (مثلاً با مسیر کامل API) تنظیم شده است
-            _callBackUrl = configuration["MelatSettings:CallBackUrl"];
+            _context = context;
 
             var endpoint = new EndpointAddress("https://bpm.shaparak.ir/pgwchannel/services/pgw?wsdl");
             var binding = new BasicHttpBinding
@@ -493,29 +642,63 @@ namespace deathSite.Services.Payment
             _client = new PaymentGatewayClient(binding, endpoint);
         }
 
+        // متد کمکی برای بررسی فعال بودن درگاه
+        private async Task<bool> IsGatewayActiveAsync()
+        {
+            var settings = await _context.PaymentSettings
+                .Where(p => p.GatewayName == "Melat" && p.Key == "IsActive")
+                .Select(p => p.Value)
+                .FirstOrDefaultAsync();
+
+            return settings?.ToLower() == "true";
+        }
+
+        // متد کمکی برای دریافت تنظیمات از دیتابیس
+        private async Task<(long TerminalID, string Username, string Password, string CallBackUrl)> GetMelatConfigAsync()
+        {
+            var settings = await _context.PaymentSettings
+                .Where(p => p.GatewayName == "Melat")
+                .ToDictionaryAsync(p => p.Key, p => p.Value);
+
+            return (
+                settings.ContainsKey("TerminalID") ? long.Parse(settings["TerminalID"]) : 0,
+                settings.ContainsKey("Username") ? settings["Username"] : string.Empty,
+                settings.ContainsKey("Password") ? settings["Password"] : string.Empty,
+                settings.ContainsKey("CallBackUrl") ? settings["CallBackUrl"] : string.Empty
+            );
+        }
+
         public async Task<(bool Success, string Message, string RefId)> PayRequestAsync(PaymentRequestDto request)
         {
+            // بررسی فعال بودن درگاه
+            if (!await IsGatewayActiveAsync())
+            {
+                return (false, "درگاه پرداخت بانک ملت در حال حاضر غیرفعال است", null);
+            }
+
             try
             {
+                var (terminalID, username, password, callBackUrl) = await GetMelatConfigAsync();
+
                 var localDate = DateTime.Now.ToString("yyyyMMdd");
                 var localTime = DateTime.Now.ToString("HHmmss");
 
                 var response = await _client.bpPayRequestAsync(
-                    _terminalID,
-                    _username,
-                    _password,
+                    terminalID,
+                    username,
+                    password,
                     request.OrderId,
                     request.Amount,
                     localDate,
                     localTime,
-                    string.Empty,        // additionalData
-                    _callBackUrl,        // استفاده از callback تنظیم‌شده در appsettings.json
+                    string.Empty,
+                    callBackUrl,
                     request.PayerId,
-                    string.Empty,        // mobileNo
-                    string.Empty,        // encPan
-                    string.Empty,        // panHiddenMode
-                    string.Empty,        // cartItem
-                    string.Empty         // enc
+                    string.Empty,
+                    string.Empty,
+                    string.Empty,
+                    string.Empty,
+                    string.Empty
                 );
 
                 var resultCode = response.Body.@return;
@@ -541,12 +724,20 @@ namespace deathSite.Services.Payment
 
         public async Task<(bool Success, string Message)> VerifyRequestAsync(VerifyRequestDto request)
         {
+            // بررسی فعال بودن درگاه
+            if (!await IsGatewayActiveAsync())
+            {
+                return (false, "درگاه پرداخت بانک ملت در حال حاضر غیرفعال است");
+            }
+
             try
             {
+                var (terminalID, username, password, _) = await GetMelatConfigAsync();
+
                 var response = await _client.bpVerifyRequestAsync(
-                    _terminalID,
-                    _username,
-                    _password,
+                    terminalID,
+                    username,
+                    password,
                     request.OrderId,
                     request.SaleOrderId,
                     request.SaleReferenceId
@@ -573,12 +764,20 @@ namespace deathSite.Services.Payment
 
         public async Task<(bool Success, string Message)> SettleRequestAsync(SettleRequestDto request)
         {
+            // بررسی فعال بودن درگاه
+            if (!await IsGatewayActiveAsync())
+            {
+                return (false, "درگاه پرداخت بانک ملت در حال حاضر غیرفعال است");
+            }
+
             try
             {
+                var (terminalID, username, password, _) = await GetMelatConfigAsync();
+
                 var response = await _client.bpSettleRequestAsync(
-                    _terminalID,
-                    _username,
-                    _password,
+                    terminalID,
+                    username,
+                    password,
                     request.OrderId,
                     request.SaleOrderId,
                     request.SaleReferenceId
@@ -601,6 +800,8 @@ namespace deathSite.Services.Payment
                 _logger.LogError(ex, "Error in SettleRequest");
                 return (false, ex.Message);
             }
+
         }
     }
 }
+

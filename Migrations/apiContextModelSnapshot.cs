@@ -616,7 +616,7 @@ namespace api.Migrations
                     b.ToTable("userTokens");
                 });
 
-            modelBuilder.Entity("deathSite.Model.PaymentInvoice", b =>
+            modelBuilder.Entity("deathSite.Model.Factors", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -668,7 +668,35 @@ namespace api.Migrations
 
                     b.HasIndex("UserPackageId");
 
-                    b.ToTable("PaymentInvoices");
+                    b.ToTable("Factors");
+                });
+
+            modelBuilder.Entity("deathSite.Model.PaymentSettings", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("GatewayName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Key")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("LastUpdated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Value")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("PaymentSettings");
                 });
 
             modelBuilder.Entity("deathSite.Model.UserPackage", b =>
@@ -774,16 +802,16 @@ namespace api.Migrations
                     b.Navigation("Tag");
                 });
 
-            modelBuilder.Entity("deathSite.Model.PaymentInvoice", b =>
+            modelBuilder.Entity("deathSite.Model.Factors", b =>
                 {
                     b.HasOne("api.Model.User", "User")
-                        .WithMany("PaymentInvoices")
+                        .WithMany("Factors")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("deathSite.Model.UserPackage", "UserPackage")
-                        .WithMany("PaymentInvoices")
+                        .WithMany("Factors")
                         .HasForeignKey("UserPackageId")
                         .OnDelete(DeleteBehavior.Restrict);
 
@@ -837,7 +865,7 @@ namespace api.Migrations
 
                     b.Navigation("Deceaseds");
 
-                    b.Navigation("PaymentInvoices");
+                    b.Navigation("Factors");
 
                     b.Navigation("Shahids");
 
@@ -846,7 +874,7 @@ namespace api.Migrations
 
             modelBuilder.Entity("deathSite.Model.UserPackage", b =>
                 {
-                    b.Navigation("PaymentInvoices");
+                    b.Navigation("Factors");
                 });
 #pragma warning restore 612, 618
         }

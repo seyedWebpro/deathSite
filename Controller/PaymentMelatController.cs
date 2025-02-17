@@ -135,17 +135,6 @@ namespace api.Controllers
             var result = await _paymentService.PayRequestAsync(request);
             if (result.Success)
             {
-                return Ok(new { Message = "Request successful", RefId = result.RefId });
-            }
-            return BadRequest(new { Message = result.Message });
-        }
-
-        [HttpPost("PayRequest2")]
-        public async Task<IActionResult> PayRequest2([FromBody] PaymentRequestDto request)
-        {
-            var result = await _paymentService.PayRequestAsync(request);
-            if (result.Success)
-            {
                 var gatewayUrl = $"https://bpm.shaparak.ir/pgwchannel/startpay.mellat?RefId={result.RefId}";
                 return Ok(new
                 {
@@ -198,9 +187,7 @@ public async Task<IActionResult> Callback()
         var query = HttpUtility.ParseQueryString(string.Empty);
         query["refId"] = refId;
         query["orderId"] = orderId.ToString();
-        query["saleOrderId"] = saleOrderId.ToString();
-        query["saleReferenceId"] = saleReferenceId.ToString();
-
+        
         // بررسی موفقیت تراکنش بر اساس ResCode
         if (resCode == "0")
         {

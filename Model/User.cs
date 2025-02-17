@@ -41,7 +41,7 @@ namespace api.Model
         public List<CondolenceMessage> CondolenceMessages { get; set; } = new List<CondolenceMessage>();
 
         // مجموعه فاکتورهای پرداخت مربوط به کاربر (رابطه یک به چند)
-        public ICollection<PaymentInvoice> PaymentInvoices { get; set; } = new List<PaymentInvoice>();
+        public ICollection<Factors> Factors { get; set; } = new List<Factors>();
     }
 
 }

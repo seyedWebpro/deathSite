@@ -27,8 +27,9 @@ namespace api.Context
         public DbSet<News> News { get; set; }
         public DbSet<Banner> Banners { get; set; }
         public DbSet<ContactMeForm> ContactMeForms { get; set; }
-        public DbSet<PaymentInvoice> PaymentInvoices { get; set; }
+        public DbSet<Factors> Factors { get; set; }
         public DbSet<UserPackage> UserPackages { get; set; }
+        public DbSet<PaymentSettings> PaymentSettings { get; set; }
 
         public apiContext(DbContextOptions<apiContext> options) : base(options)
         {
@@ -88,17 +89,17 @@ namespace api.Context
                 .HasForeignKey(cm => cm.DeceasedId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            // 9. تعریف رابطه بین PaymentInvoice و User
-            modelBuilder.Entity<PaymentInvoice>()
+            // 9. تعریف رابطه بین Factors و User
+            modelBuilder.Entity<Factors>()
                 .HasOne(pi => pi.User)
-                .WithMany(u => u.PaymentInvoices)
+                .WithMany(u => u.Factors)
                 .HasForeignKey(pi => pi.UserId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            // 10. تعریف رابطه بین PaymentInvoice و UserPackage (اختیاری)
-            modelBuilder.Entity<PaymentInvoice>()
+            // 10. تعریف رابطه بین Factors و UserPackage (اختیاری)
+            modelBuilder.Entity<Factors>()
                 .HasOne(pi => pi.UserPackage)
-                .WithMany(up => up.PaymentInvoices)
+                .WithMany(up => up.Factors)
                 .HasForeignKey(pi => pi.UserPackageId)
                 .OnDelete(DeleteBehavior.Restrict);
 

@@ -8,6 +8,6 @@ namespace api.Model
     public class ChangeMenueAndLogo
     {
         public string LogoUrl { get; set; }
-    public List<string> MenuItems { get; set; }
+        public List<string> MenuItems { get; set; }
     }
 }
