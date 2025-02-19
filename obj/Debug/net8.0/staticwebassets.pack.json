@@ -1,8 +1,16 @@
 {
   "Files": [
     {
-      "Id": "D:\\DeadWebsit\\api\\deathSite\\wwwroot\\uploads\\shahids\\2\\images\\1ab09d82-2c50-4c3e-9f5c-392c1a288972.jpg",
-      "PackagePath": "staticwebassets\\uploads\\shahids\\2\\images\\1ab09d82-2c50-4c3e-9f5c-392c1a288972.jpg"
+      "Id": "D:\\DeadWebsit\\api\\deathSite\\wwwroot\\uploads\\logos\\0\\images\\02acf2e4-5ccc-45e7-a9a0-6e90d7898df3.jpg",
+      "PackagePath": "staticwebassets\\uploads\\logos\\0\\images\\02acf2e4-5ccc-45e7-a9a0-6e90d7898df3.jpg"
+    },
+    {
+      "Id": "D:\\DeadWebsit\\api\\deathSite\\wwwroot\\uploads\\shahids\\3\\images\\e7cd5ad8-f5cc-432c-ab3f-e3cb6e8dbb15.jpg",
+      "PackagePath": "staticwebassets\\uploads\\shahids\\3\\images\\e7cd5ad8-f5cc-432c-ab3f-e3cb6e8dbb15.jpg"
+    },
+    {
+      "Id": "D:\\DeadWebsit\\api\\deathSite\\wwwroot\\uploads\\shahids\\5\\images\\ff62a642-13b6-4c8f-91c6-46630d5d58d2.jpg",
+      "PackagePath": "staticwebassets\\uploads\\shahids\\5\\images\\ff62a642-13b6-4c8f-91c6-46630d5d58d2.jpg"
     },
     {
       "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.api.Microsoft.AspNetCore.StaticWebAssets.props",

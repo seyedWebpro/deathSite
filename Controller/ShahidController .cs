@@ -463,98 +463,98 @@ namespace api.Controller
             });
         }
 
-[HttpDelete("{id}/delete")]
-public async Task<IActionResult> Delete(int id)
-{
-    var token = Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
-    
-    if (string.IsNullOrEmpty(token))
-    {
-        return Unauthorized(new { StatusCode = 401, Message = "توکن معتبر نیست." });
-    }
-
-    try
-    {
-        // تجزیه توکن و استخراج اطلاعات کاربر
-        var handler = new JwtSecurityTokenHandler();
-        var jwtToken = handler.ReadJwtToken(token);
-
-        var userIdClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == "UserId")?.Value;
-        if (userIdClaim == null)
+        [HttpDelete("{id}/delete")]
+        public async Task<IActionResult> Delete(int id)
         {
-            return Unauthorized(new { StatusCode = 401, Message = "توکن معتبر نیست." });
-        }
+            var token = Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
 
-        var userId = int.Parse(userIdClaim);
-        
-        var shahid = await _context.shahids.FindAsync(id);
-        if (shahid == null)
-        {
-            _logger.LogWarning("Shahid with id {ShahidId} not found.", id);
-            return NotFound(new { StatusCode = 404, Message = "شهید پیدا نشد." });
-        }
+            if (string.IsNullOrEmpty(token))
+            {
+                return Unauthorized(new { StatusCode = 401, Message = "توکن معتبر نیست." });
+            }
 
-        // بررسی اینکه آیا شهید متعلق به کاربر است
-        if (shahid.UserId != userId)
-        {
-            return Unauthorized(new { StatusCode = 401, Message = "شما مجاز به حذف این شهید نیستید." });
-        }
-
-        var allFileUrls = shahid.PhotoUrls.Concat(shahid.VideoUrls).Concat(shahid.VoiceUrls).ToList();
-        bool anyFileDeleted = false;
-
-        foreach (var fileUrl in allFileUrls)
-        {
             try
             {
-                string fileName = Path.GetFileName(fileUrl);
-                await _fileUploadService.DeleteFileAsync(fileName, "shahids", id);
-                anyFileDeleted = true;
-            }
-            catch (FileNotFoundException ex)
-            {
-                _logger.LogWarning(ex, "File not found for deletion: {FileUrl}", fileUrl);
+                // تجزیه توکن و استخراج اطلاعات کاربر
+                var handler = new JwtSecurityTokenHandler();
+                var jwtToken = handler.ReadJwtToken(token);
+
+                var userIdClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == "UserId")?.Value;
+                if (userIdClaim == null)
+                {
+                    return Unauthorized(new { StatusCode = 401, Message = "توکن معتبر نیست." });
+                }
+
+                var userId = int.Parse(userIdClaim);
+
+                var shahid = await _context.shahids.FindAsync(id);
+                if (shahid == null)
+                {
+                    _logger.LogWarning("Shahid with id {ShahidId} not found.", id);
+                    return NotFound(new { StatusCode = 404, Message = "شهید پیدا نشد." });
+                }
+
+                // بررسی اینکه آیا شهید متعلق به کاربر است
+                if (shahid.UserId != userId)
+                {
+                    return Unauthorized(new { StatusCode = 401, Message = "شما مجاز به حذف این شهید نیستید." });
+                }
+
+                var allFileUrls = shahid.PhotoUrls.Concat(shahid.VideoUrls).Concat(shahid.VoiceUrls).ToList();
+                bool anyFileDeleted = false;
+
+                foreach (var fileUrl in allFileUrls)
+                {
+                    try
+                    {
+                        string fileName = Path.GetFileName(fileUrl);
+                        await _fileUploadService.DeleteFileAsync(fileName, "shahids", id);
+                        anyFileDeleted = true;
+                    }
+                    catch (FileNotFoundException ex)
+                    {
+                        _logger.LogWarning(ex, "File not found for deletion: {FileUrl}", fileUrl);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, "Error deleting file: {FileUrl}", fileUrl);
+                    }
+                }
+
+                if (!anyFileDeleted)
+                {
+                    _logger.LogWarning("No files were deleted for Shahid with id {ShahidId}. The shahid will not be deleted.", id);
+                    return BadRequest(new { StatusCode = 400, Message = "هیچ فایلی حذف نشد. شهید حذف نخواهد شد." });
+                }
+
+                // حذف پوشه مربوط به شهید
+                string shahidFolderPath = Path.Combine("wwwroot", "uploads", "shahids", id.ToString());
+                if (Directory.Exists(shahidFolderPath))
+                {
+                    try
+                    {
+                        Directory.Delete(shahidFolderPath, true); // به صورت بازگشتی پوشه‌ها را حذف می‌کند
+                        _logger.LogInformation("Folder {ShahidFolderPath} deleted successfully.", shahidFolderPath);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, "Error deleting folder {ShahidFolderPath}", shahidFolderPath);
+                    }
+                }
+
+                // حذف شهید از دیتابیس
+                _context.shahids.Remove(shahid);
+                await _context.SaveChangesAsync();
+
+                _logger.LogInformation("Shahid with id {ShahidId} and associated files were successfully deleted.", id);
+                return Ok(new { StatusCode = 200, Message = "شهید و فایل‌های مربوطه حذف شدند." });
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error deleting file: {FileUrl}", fileUrl);
+                _logger.LogError(ex, "An error occurred while deleting shahid with id {ShahidId}.", id);
+                return StatusCode(500, new { StatusCode = 500, Message = "خطای داخلی سرور.", Error = ex.Message });
             }
         }
-
-        if (!anyFileDeleted)
-        {
-            _logger.LogWarning("No files were deleted for Shahid with id {ShahidId}. The shahid will not be deleted.", id);
-            return BadRequest(new { StatusCode = 400, Message = "هیچ فایلی حذف نشد. شهید حذف نخواهد شد." });
-        }
-
-        // حذف پوشه مربوط به شهید
-        string shahidFolderPath = Path.Combine("wwwroot", "uploads", "shahids", id.ToString());
-        if (Directory.Exists(shahidFolderPath))
-        {
-            try
-            {
-                Directory.Delete(shahidFolderPath, true); // به صورت بازگشتی پوشه‌ها را حذف می‌کند
-                _logger.LogInformation("Folder {ShahidFolderPath} deleted successfully.", shahidFolderPath);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error deleting folder {ShahidFolderPath}", shahidFolderPath);
-            }
-        }
-
-        // حذف شهید از دیتابیس
-        _context.shahids.Remove(shahid);
-        await _context.SaveChangesAsync();
-
-        _logger.LogInformation("Shahid with id {ShahidId} and associated files were successfully deleted.", id);
-        return Ok(new { StatusCode = 200, Message = "شهید و فایل‌های مربوطه حذف شدند." });
-    }
-    catch (Exception ex)
-    {
-        _logger.LogError(ex, "An error occurred while deleting shahid with id {ShahidId}.", id);
-        return StatusCode(500, new { StatusCode = 500, Message = "خطای داخلی سرور.", Error = ex.Message });
-    }
-}
 
     }
 }

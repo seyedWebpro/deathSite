@@ -1,20 +1,16 @@
 {
   "Files": [
     {
-      "Id": "D:\\DeadWebsit\\api\\deathSite\\wwwroot\\uploads\\menus\\0\\images\\38e2f975-db80-49c2-9652-7e4a0d71f96a.jpg",
-      "PackagePath": "staticwebassets\\uploads\\menus\\0\\images\\38e2f975-db80-49c2-9652-7e4a0d71f96a.jpg"
+      "Id": "D:\\DeadWebsit\\api\\deathSite\\wwwroot\\uploads\\logos\\0\\images\\289c133c-75a6-4b94-a8f5-8d33fdc21bbe.jpg",
+      "PackagePath": "staticwebassets\\uploads\\logos\\0\\images\\289c133c-75a6-4b94-a8f5-8d33fdc21bbe.jpg"
     },
     {
-      "Id": "D:\\DeadWebsit\\api\\deathSite\\wwwroot\\uploads\\menus\\0\\images\\6292ead6-9953-4a80-a403-b2a734dfb0cc.jpg",
-      "PackagePath": "staticwebassets\\uploads\\menus\\0\\images\\6292ead6-9953-4a80-a403-b2a734dfb0cc.jpg"
+      "Id": "D:\\DeadWebsit\\api\\deathSite\\wwwroot\\uploads\\shahids\\3\\images\\e7cd5ad8-f5cc-432c-ab3f-e3cb6e8dbb15.jpg",
+      "PackagePath": "staticwebassets\\uploads\\shahids\\3\\images\\e7cd5ad8-f5cc-432c-ab3f-e3cb6e8dbb15.jpg"
     },
     {
-      "Id": "D:\\DeadWebsit\\api\\deathSite\\wwwroot\\uploads\\menus\\0\\images\\f8375795-e932-40cb-8cee-0d3d872a48ec.jpg",
-      "PackagePath": "staticwebassets\\uploads\\menus\\0\\images\\f8375795-e932-40cb-8cee-0d3d872a48ec.jpg"
-    },
-    {
-      "Id": "D:\\DeadWebsit\\api\\deathSite\\wwwroot\\uploads\\news\\2\\images\\26fa8f83-909b-47de-983e-a2c15efaacdb.jpg",
-      "PackagePath": "staticwebassets\\uploads\\news\\2\\images\\26fa8f83-909b-47de-983e-a2c15efaacdb.jpg"
+      "Id": "D:\\DeadWebsit\\api\\deathSite\\wwwroot\\uploads\\shahids\\5\\images\\ff62a642-13b6-4c8f-91c6-46630d5d58d2.jpg",
+      "PackagePath": "staticwebassets\\uploads\\shahids\\5\\images\\ff62a642-13b6-4c8f-91c6-46630d5d58d2.jpg"
     },
     {
       "Id": "obj\\Release\\net8.0\\staticwebassets\\msbuild.api.Microsoft.AspNetCore.StaticWebAssets.props",

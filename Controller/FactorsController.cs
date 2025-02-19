@@ -37,7 +37,6 @@ namespace deathSite.Controller
                     Id = f.Id,
                     UserId = f.UserId,
                     UserPackageId = f.UserPackageId,
-                    UserName = f.UserName,
                     TransactionDate = f.TransactionDate,
                     Amount = f.Amount,
                     Status = f.Status,
@@ -65,7 +64,6 @@ namespace deathSite.Controller
                     Id = f.Id,
                     UserId = f.UserId,
                     UserPackageId = f.UserPackageId,
-                    UserName = f.UserName,
                     TransactionDate = f.TransactionDate,
                     Amount = f.Amount,
                     Status = f.Status,
@@ -103,7 +101,6 @@ namespace deathSite.Controller
                     Id = f.Id,
                     UserId = f.UserId,
                     UserPackageId = f.UserPackageId,
-                    UserName = f.UserName,
                     TransactionDate = f.TransactionDate,
                     Amount = f.Amount,
                     Status = f.Status,
@@ -163,7 +160,7 @@ namespace deathSite.Controller
                     Id = f.Id,
                     UserId = f.UserId,
                     UserPackageId = f.UserPackageId,
-                    UserName = f.UserName,
+                    
                     TransactionDate = f.TransactionDate,
                     Amount = f.Amount,
                     Status = f.Status,
@@ -207,7 +204,7 @@ namespace deathSite.Controller
             {
                 UserId = factorDto.UserId,
                 UserPackageId = factorDto.UserPackageId,
-                UserName = factorDto.UserName,
+                
                 TransactionDate = factorDto.TransactionDate,
                 Amount = factorDto.Amount,
                 Status = factorDto.Status,
@@ -226,7 +223,6 @@ namespace deathSite.Controller
                 Id = factor.Id,
                 UserId = factor.UserId,
                 UserPackageId = factor.UserPackageId,
-                UserName = factor.UserName,
                 TransactionDate = factor.TransactionDate,
                 Amount = factor.Amount,
                 Status = factor.Status,
@@ -271,10 +267,6 @@ namespace deathSite.Controller
                 factor.UserPackageId = factorDto.UserPackageId;
             }
 
-            if (factorDto.UserName != null)
-            {
-                factor.UserName = factorDto.UserName;
-            }
 
             if (factorDto.TransactionDate.HasValue)
             {
@@ -323,7 +315,6 @@ namespace deathSite.Controller
                 Id = factor.Id,
                 UserId = factor.UserId,
                 UserPackageId = factor.UserPackageId,
-                UserName = factor.UserName,
                 TransactionDate = factor.TransactionDate,
                 Amount = factor.Amount,
                 Status = factor.Status,

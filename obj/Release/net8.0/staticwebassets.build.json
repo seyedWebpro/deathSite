@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "lwAYRy0AoIU+kn+ubvisoMVDqWwB+BRdobG6csGXwqo=",
+  "Hash": "1vVDMTD3r3a0wNKoPJ/0v4FN6PB/u1NkQEwk7CXGleg=",
   "Source": "api",
   "BasePath": "_content/api",
   "Mode": "Default",
@@ -15,5 +15,63 @@
       "Pattern": "**"
     }
   ],
-  "Assets": []
+  "Assets": [
+    {
+      "Identity": "D:\\DeadWebsit\\api\\deathSite\\wwwroot\\uploads\\logos\\0\\images\\289c133c-75a6-4b94-a8f5-8d33fdc21bbe.jpg",
+      "SourceId": "api",
+      "SourceType": "Discovered",
+      "ContentRoot": "D:\\DeadWebsit\\api\\deathSite\\wwwroot\\",
+      "BasePath": "_content/api",
+      "RelativePath": "uploads/logos/0/images/289c133c-75a6-4b94-a8f5-8d33fdc21bbe.jpg",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\uploads\\logos\\0\\images\\289c133c-75a6-4b94-a8f5-8d33fdc21bbe.jpg"
+    },
+    {
+      "Identity": "D:\\DeadWebsit\\api\\deathSite\\wwwroot\\uploads\\shahids\\3\\images\\e7cd5ad8-f5cc-432c-ab3f-e3cb6e8dbb15.jpg",
+      "SourceId": "api",
+      "SourceType": "Discovered",
+      "ContentRoot": "D:\\DeadWebsit\\api\\deathSite\\wwwroot\\",
+      "BasePath": "_content/api",
+      "RelativePath": "uploads/shahids/3/images/e7cd5ad8-f5cc-432c-ab3f-e3cb6e8dbb15.jpg",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\uploads\\shahids\\3\\images\\e7cd5ad8-f5cc-432c-ab3f-e3cb6e8dbb15.jpg"
+    },
+    {
+      "Identity": "D:\\DeadWebsit\\api\\deathSite\\wwwroot\\uploads\\shahids\\5\\images\\ff62a642-13b6-4c8f-91c6-46630d5d58d2.jpg",
+      "SourceId": "api",
+      "SourceType": "Discovered",
+      "ContentRoot": "D:\\DeadWebsit\\api\\deathSite\\wwwroot\\",
+      "BasePath": "_content/api",
+      "RelativePath": "uploads/shahids/5/images/ff62a642-13b6-4c8f-91c6-46630d5d58d2.jpg",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\uploads\\shahids\\5\\images\\ff62a642-13b6-4c8f-91c6-46630d5d58d2.jpg"
+    }
+  ]
 }
