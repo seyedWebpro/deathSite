@@ -1,8 +1,20 @@
 {
   "Files": [
     {
+      "Id": "D:\\DeadWebsit\\api\\deathSite\\wwwroot\\uploads\\PeoplePoster\\0\\images\\352cdb32-dd6e-40cf-b476-0da1911f9c1a.jpg",
+      "PackagePath": "staticwebassets\\uploads\\PeoplePoster\\0\\images\\352cdb32-dd6e-40cf-b476-0da1911f9c1a.jpg"
+    },
+    {
       "Id": "D:\\DeadWebsit\\api\\deathSite\\wwwroot\\uploads\\logos\\0\\images\\289c133c-75a6-4b94-a8f5-8d33fdc21bbe.jpg",
       "PackagePath": "staticwebassets\\uploads\\logos\\0\\images\\289c133c-75a6-4b94-a8f5-8d33fdc21bbe.jpg"
+    },
+    {
+      "Id": "D:\\DeadWebsit\\api\\deathSite\\wwwroot\\uploads\\people\\0\\images\\d042413d-2745-4632-a633-fcc8f58ddb6c.jpg",
+      "PackagePath": "staticwebassets\\uploads\\people\\0\\images\\d042413d-2745-4632-a633-fcc8f58ddb6c.jpg"
+    },
+    {
+      "Id": "D:\\DeadWebsit\\api\\deathSite\\wwwroot\\uploads\\shahid\\0\\images\\abc204fe-fd59-432a-adc7-dfa22bc7fc3f.jpg",
+      "PackagePath": "staticwebassets\\uploads\\shahid\\0\\images\\abc204fe-fd59-432a-adc7-dfa22bc7fc3f.jpg"
     },
     {
       "Id": "D:\\DeadWebsit\\api\\deathSite\\wwwroot\\uploads\\shahids\\3\\images\\e7cd5ad8-f5cc-432c-ab3f-e3cb6e8dbb15.jpg",

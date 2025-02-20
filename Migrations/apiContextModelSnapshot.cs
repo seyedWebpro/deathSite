@@ -700,6 +700,27 @@ namespace api.Migrations
                     b.ToTable("PaymentSettings");
                 });
 
+            modelBuilder.Entity("deathSite.Model.Poster", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Category")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FilePath")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("posters");
+                });
+
             modelBuilder.Entity("deathSite.Model.UserPackage", b =>
                 {
                     b.Property<int>("Id")

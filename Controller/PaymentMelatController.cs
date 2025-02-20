@@ -387,110 +387,113 @@ namespace api.Controllers
         }
 
         [HttpPost("UpgradePackage")]
-        public async Task<IActionResult> UpgradePackage([FromBody] ExtendedPaymentRequestDto request)
-        {
-            if (!ModelState.IsValid)
-            {
-                _logger.LogWarning("Invalid model state for Package Upgrade Request: {@Request}", request);
-                return BadRequest(ModelState);
-            }
+public async Task<IActionResult> UpgradePackage([FromBody] UpgradePackageRequestDto request)
+{
+    if (!ModelState.IsValid)
+    {
+        _logger.LogWarning("Invalid model state for Package Upgrade Request: {@Request}", request);
+        return BadRequest(ModelState);
+    }
 
-            // Validate essential fields
-            if (request.Amount <= 0 || !request.UserId.HasValue || !request.PackageId.HasValue)
-            {
-                _logger.LogWarning("Invalid request parameters for Package Upgrade: {@Request}", request);
-                return BadRequest(new { Message = "Invalid request parameters." });
-            }
+    // Validate essential fields
+    if (request.UserId <= 0 || request.PackageId <= 0 || request.NewPackageId <= 0 || request.OrderId <= 0 || string.IsNullOrEmpty(request.PayerId))
+    {
+        _logger.LogWarning("Invalid request parameters for Package Upgrade: {@Request}", request);
+        return BadRequest(new { Message = "Invalid request parameters." });
+    }
 
-            // Check if user exists
-            var user = await _dbContext.users.FirstOrDefaultAsync(u => u.Id == request.UserId.Value);
-            if (user == null)
-            {
-                _logger.LogWarning("User not found for Package Upgrade: {@Request}", request);
-                return BadRequest(new { Message = "User not found." });
-            }
+    // Check if user exists
+    var user = await _dbContext.users.FirstOrDefaultAsync(u => u.Id == request.UserId);
+    if (user == null)
+    {
+        _logger.LogWarning("User not found for Package Upgrade: {@Request}", request);
+        return BadRequest(new { Message = "User not found." });
+    }
 
-            // Check if new package exists
-            var newPackage = await _dbContext.packages.FirstOrDefaultAsync(p => p.Id == request.PackageId.Value);
-            if (newPackage == null)
-            {
-                _logger.LogWarning("New package not found for Package Upgrade: {@Request}", request);
-                return BadRequest(new { Message = "New package not found." });
-            }
+    // Check if new package exists and is more expensive than the current package
+    var currentPackage = await _dbContext.packages.FirstOrDefaultAsync(p => p.Id == request.PackageId);
+    var newPackage = await _dbContext.packages.FirstOrDefaultAsync(p => p.Id == request.NewPackageId);
+    if (newPackage == null || newPackage.Price <= currentPackage.Price)
+    {
+        _logger.LogWarning("New package not found or not more expensive for Package Upgrade: {@Request}", request);
+        return BadRequest(new { Message = "New package not found or not more expensive." });
+    }
 
-            // Find current active package
-            var currentUserPackage = await _dbContext.UserPackages
-                .FirstOrDefaultAsync(up => up.UserId == request.UserId.Value && up.IsActive);
-            if (currentUserPackage == null)
-            {
-                _logger.LogWarning("No active package found for upgrade: {@Request}", request);
-                return BadRequest(new { Message = "No active package found to upgrade." });
-            }
+    // Find current active package
+    var currentUserPackage = await _dbContext.UserPackages
+        .FirstOrDefaultAsync(up => up.UserId == request.UserId && up.IsActive);
+    if (currentUserPackage == null)
+    {
+        _logger.LogWarning("No active package found for upgrade: {@Request}", request);
+        return BadRequest(new { Message = "No active package found to upgrade." });
+    }
+
+            // Calculate the price difference
+            var priceDifference = (long)(newPackage.Price - currentPackage.Price);
 
             // Create pending factor
             var factor = new Factors
-            {
-                UserId = request.UserId.Value,
-                PackageId = request.PackageId.Value,
-                UserPackageId = currentUserPackage.Id,
-                TransactionDate = DateTime.UtcNow,
-                Amount = request.Amount,
-                Status = "Pending",
-                TransactionType = "Upgrade",
-                PaymentGateway = "Melat",
-                Description = $"Package upgrade payment from PackageId: {currentUserPackage.PackageId} to PackageId: {request.PackageId.Value}"
-            };
+    {
+        UserId = request.UserId,
+        PackageId = request.NewPackageId,
+        UserPackageId = currentUserPackage.Id,
+        TransactionDate = DateTime.UtcNow,
+        Amount = priceDifference,
+        Status = "Pending",
+        TransactionType = "Upgrade",
+        PaymentGateway = "Melat",
+        Description = $"Package upgrade payment from PackageId: {currentUserPackage.PackageId} to PackageId: {request.NewPackageId}"
+    };
 
-            try
-            {
-                _dbContext.Factors.Add(factor);
-                await _dbContext.SaveChangesAsync();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error saving factor for Package Upgrade: {@Request}", request);
-                return StatusCode(500, new { Message = "Internal server error while saving payment data." });
-            }
+    try
+    {
+        _dbContext.Factors.Add(factor);
+        await _dbContext.SaveChangesAsync();
+    }
+    catch (Exception ex)
+    {
+        _logger.LogError(ex, "Error saving factor for Package Upgrade: {@Request}", request);
+        return StatusCode(500, new { Message = "Internal server error while saving payment data." });
+    }
 
-            // Prepare payment request
-            var gatewayRequest = new PaymentRequestDto
-            {
-                OrderId = request.OrderId,
-                Amount = request.Amount,
-                PayerId = request.PayerId
-            };
+    // Prepare payment request
+    var gatewayRequest = new PaymentRequestDto
+    {
+        OrderId = request.OrderId,
+        Amount = priceDifference,
+        PayerId = request.PayerId
+    };
 
-            try
-            {
-                var result = await _paymentService.PayRequestAsync(gatewayRequest);
-                if (result.Success)
-                {
-                    factor.TrackingNumber = result.RefId;
-                    _dbContext.Factors.Update(factor);
-                    await _dbContext.SaveChangesAsync();
+    try
+    {
+var result = await _paymentService.PayRequestAsync(gatewayRequest);
+if (result.Success)
+{
+    factor.TrackingNumber = result.RefId;
+    _dbContext.Factors.Update(factor);
+    await _dbContext.SaveChangesAsync();
 
-                    var gatewayUrl = $"https://bpm.shaparak.ir/pgwchannel/startpay.mellat?RefId={result.RefId}";
-                    return Ok(new
-                    {
-                        Message = "Upgrade request successful",
-                        RefId = result.RefId,
-                        GatewayUrl = gatewayUrl
-                    });
-                }
-                else
-                {
-                    _logger.LogWarning("Payment service returned error for Package Upgrade: {@Request}, Error: {Error}",
-                        request, result.Message);
-                    return BadRequest(new { Message = result.Message });
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error occurred during upgrade payment processing: {@Request}", request);
-                return StatusCode(500, new { Message = "Internal server error during payment processing." });
-            }
-        }
-
+    var gatewayUrl = $"https://bpm.shaparak.ir/pgwchannel/startpay.mellat?RefId={result.RefId}";
+    return Ok(new
+    {
+        Message = "Upgrade request successful",
+        RefId = result.RefId,
+        GatewayUrl = gatewayUrl
+    });
+}
+else
+{
+    _logger.LogWarning("Payment service returned error for Package Upgrade: {@Request}, Error: {Error}",
+        request, result.Message);
+    return BadRequest(new { Message = result.Message });
+}
+}
+catch (Exception ex)
+{
+    _logger.LogError(ex, "Error occurred during upgrade payment processing: {@Request}", request);
+    return StatusCode(500, new { Message = "Internal server error during payment processing." });
+}
+}
         // اضافه کردن اپدیت و تمدید
 
         // Update the Callback method to handle renewals and upgrades
@@ -632,10 +635,27 @@ namespace api.Controllers
 
             if (userPackage != null)
             {
-                // Extend the expiry date
-                userPackage.ExpiryDate = userPackage.ExpiryDate > DateTime.UtcNow
-                    ? userPackage.ExpiryDate.AddDays(int.Parse(package.ValidityPeriod))
-                    : DateTime.UtcNow.AddDays(int.Parse(package.ValidityPeriod));
+                // Check if package is about to expire (1 month left)
+                var daysToExpiry = (userPackage.ExpiryDate - DateTime.UtcNow).Days;
+                if (daysToExpiry <= 30)
+                {
+                    // Extend the expiry date
+                    if (userPackage.ExpiryDate < DateTime.UtcNow)
+                    {
+                        // Package has already expired, extend from the expiry date
+                        userPackage.ExpiryDate = DateTime.UtcNow.AddDays(int.Parse(package.ValidityPeriod));
+                    }
+                    else
+                    {
+                        // Package has not expired yet, extend for ValidityPeriod days
+                        userPackage.ExpiryDate = userPackage.ExpiryDate.AddDays(int.Parse(package.ValidityPeriod));
+                    }
+                }
+                else
+                {
+                    // Package has not expired yet, extend for ValidityPeriod days
+                    userPackage.ExpiryDate = userPackage.ExpiryDate.AddDays(int.Parse(package.ValidityPeriod));
+                }
 
                 userPackage.IsActive = true;
 
@@ -644,35 +664,41 @@ namespace api.Controllers
             }
         }
 
-        private async Task HandlePackageUpgrade(Factors factor, Package package)
+
+        private async Task HandlePackageUpgrade(Factors factor, Package newPackage)
+{
+    // Find the current active package for the user
+    var currentUserPackage = await _dbContext.UserPackages
+        .FirstOrDefaultAsync(up => up.Id == factor.UserPackageId);
+
+    if (currentUserPackage != null)
+    {
+        // Deactivate the current package
+        currentUserPackage.IsActive = false;
+        _dbContext.UserPackages.Update(currentUserPackage);
+
+        // Create a new package with the upgraded features
+        var newUserPackage = new UserPackage
         {
-            var currentUserPackage = await _dbContext.UserPackages
-                .FirstOrDefaultAsync(up => up.Id == factor.UserPackageId);
+            UserId = factor.UserId,
+            PackageId = newPackage.Id,
+            // Preserve the original PurchaseDate and ExpiryDate
+            PurchaseDate = currentUserPackage.PurchaseDate,
+            ExpiryDate = currentUserPackage.ExpiryDate,
+            IsActive = true,
+            // Copy the usage counts from the previous package
+            UsedImageCount = currentUserPackage.UsedImageCount,
+            UsedVideoCount = currentUserPackage.UsedVideoCount,
+            UsedNotificationCount = currentUserPackage.UsedNotificationCount,
+            UsedAudioFileCount = currentUserPackage.UsedAudioFileCount
+        };
 
-            if (currentUserPackage != null)
-            {
-                // Deactivate current package
-                currentUserPackage.IsActive = false;
-                _dbContext.UserPackages.Update(currentUserPackage);
+        // Add the new package and save the changes
+        _dbContext.UserPackages.Add(newUserPackage);
+        await _dbContext.SaveChangesAsync();
+    }
+}
 
-                // Create new package with upgraded features
-                var newUserPackage = new UserPackage
-                {
-                    UserId = factor.UserId,
-                    PackageId = package.Id,
-                    PurchaseDate = DateTime.UtcNow,
-                    ExpiryDate = DateTime.UtcNow.AddDays(int.Parse(package.ValidityPeriod)),
-                    IsActive = true,
-                    UsedImageCount = currentUserPackage.UsedImageCount,
-                    UsedVideoCount = currentUserPackage.UsedVideoCount,
-                    UsedNotificationCount = currentUserPackage.UsedNotificationCount,
-                    UsedAudioFileCount = currentUserPackage.UsedAudioFileCount
-                };
-
-                _dbContext.UserPackages.Add(newUserPackage);
-                await _dbContext.SaveChangesAsync();
-            }
-        }
 
         // [HttpPost("Callback")]
         // public async Task<IActionResult> Callback()

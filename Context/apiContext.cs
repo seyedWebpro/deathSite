@@ -30,6 +30,7 @@ namespace api.Context
         public DbSet<Factors> Factors { get; set; }
         public DbSet<UserPackage> UserPackages { get; set; }
         public DbSet<PaymentSettings> PaymentSettings { get; set; }
+        public DbSet<Poster> posters { get; set; }
 
         public apiContext(DbContextOptions<apiContext> options) : base(options)
         {

@@ -108,6 +108,7 @@ namespace api.Controller
                     Message = "شهید با موفقیت ایجاد شد.",
                     Data = new
                     {
+                        id = shahid.Id,
                         UserId = shahid.UserId,  // بازگرداندن UserId
                         Role = role  // بازگرداندن role
                     }
@@ -553,6 +554,45 @@ namespace api.Controller
             {
                 _logger.LogError(ex, "An error occurred while deleting shahid with id {ShahidId}.", id);
                 return StatusCode(500, new { StatusCode = 500, Message = "خطای داخلی سرور.", Error = ex.Message });
+            }
+        }
+
+        /// <summary>
+        /// دریافت شهدا بر اساس روز، ماه و سال شهادت از تاریخ UTC ورودی
+        /// </summary>
+        /// <param name="utcDate">تاریخ به صورت UTC (مثلاً 2025-02-16)</param>
+        /// <returns>لیستی از شهدا شامل آی‌دی، نام و آدرس عکس (در صورت وجود)</returns>
+        [HttpGet("martyrs-by-date")]
+        public IActionResult GetMartyrsByDate([FromQuery] DateTime utcDate)
+        {
+            try
+            {
+                // تبدیل تاریخ ورودی به DateOnly جهت مقایسه روز، ماه و سال
+                var targetDate = DateOnly.FromDateTime(utcDate);
+                _logger.LogInformation("شروع جستجو برای شهدا با روز {Day}، ماه {Month} و سال {Year} از تاریخ ورودی {Date}.",
+                    targetDate.Day, targetDate.Month, targetDate.Year, targetDate);
+
+                // فیلتر شهدا بر اساس تطابق روز، ماه و سال در تاریخ شهادت (BirthDead)
+                // ابتدا فیلتر در پایگاه داده و سپس اعمال عملیات مربوط به لیست‌های داخلی در حافظه
+                var martyrs = _context.shahids
+                    .Where(s => s.BirthDead.Day == targetDate.Day && s.BirthDead.Month == targetDate.Month && s.BirthDead.Year == targetDate.Year)
+                    .AsEnumerable() // انتقال داده‌ها به حافظه برای انجام عملیات پیچیده‌تر روی لیست‌ها
+                    .Select(s => new
+                    {
+                        s.Id,
+                        s.FullName,
+                        // اگر لیست عکس‌ها وجود داشته باشد و خالی نباشد، اولین آدرس عکس را برمی‌گردانیم؛ در غیر این صورت رشته خالی
+                        PhotoUrl = (s.PhotoUrls != null && s.PhotoUrls.Any() ? s.PhotoUrls.First() : string.Empty)
+                    })
+                    .ToList();
+
+                _logger.LogInformation("تعداد {Count} شهید برای تاریخ {Date} یافت شد.", martyrs.Count, targetDate);
+                return Ok(martyrs);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "خطا در دریافت شهدا برای تاریخ {Date}", utcDate);
+                return StatusCode(500, "خطای سروری داخلی");
             }
         }
 
