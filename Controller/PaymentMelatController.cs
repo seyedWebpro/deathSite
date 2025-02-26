@@ -133,6 +133,7 @@ using deathSite.View.PaymentMelat;
 using api.View.PaymentMelat;
 using deathSite.View.Packages;
 using api.Model;
+using deathSite.Services.PackageService;
 
 namespace api.Controllers
 {
@@ -141,17 +142,21 @@ namespace api.Controllers
     public class PaymentMelatController : ControllerBase
     {
         private readonly IMelatPaymentService _paymentService;
+        private readonly IPackageTransactionService _packageTransactionService;
+
         private readonly ILogger<PaymentMelatController> _logger;
         private readonly apiContext _dbContext;
 
         public PaymentMelatController(
             IMelatPaymentService paymentService,
             ILogger<PaymentMelatController> logger,
-            apiContext dbContext)
+            apiContext dbContext,
+            IPackageTransactionService packageTransactionService)
         {
             _paymentService = paymentService;
             _logger = logger;
             _dbContext = dbContext;
+            _packageTransactionService = packageTransactionService;
         }
 
         /// <summary>
@@ -167,17 +172,14 @@ namespace api.Controllers
                 return BadRequest(ModelState);
             }
 
+            string payerId = DateTime.UtcNow.Ticks.ToString();  // تبدیل Ticks به string
+            long orderId = DateTime.UtcNow.Ticks;  // استفاده از Ticks برای OrderId به صورت long
+
             // اعتبارسنجی فیلدهای ضروری مربوط به درگاه
             if (request.Amount <= 0)
             {
                 _logger.LogWarning("Invalid Amount in Payment Request: {@Request}", request);
                 return BadRequest(new { Message = "Amount must be greater than zero." });
-            }
-
-            if (string.IsNullOrWhiteSpace(request.PayerId))
-            {
-                _logger.LogWarning("PayerId is required in Payment Request: {@Request}", request);
-                return BadRequest(new { Message = "PayerId is required." });
             }
 
             // بررسی اینکه آیا پرداخت مربوط به پکیج است یا خیر
@@ -211,11 +213,11 @@ namespace api.Controllers
                     TransactionDate = DateTime.UtcNow,
                     Amount = request.Amount,
                     Status = "Pending",
-                    //TransactionType = string.IsNullOrEmpty(request.ActionType) ? "Register" : request.ActionType,
-
                     TransactionType = "Register",
                     PaymentGateway = "Melat",
-                    Description = $"Package payment initiated for PackageId: {request.PackageId.Value}"
+                    Description = $"Package payment initiated for PackageId: {request.PackageId.Value}",
+                    OrderId = orderId
+
                 };
 
                 try
@@ -233,9 +235,9 @@ namespace api.Controllers
             // نگاشت داده‌های ورودی خارجی به DTO داخلی (تنها فیلدهای لازم برای درگاه)
             var gatewayRequest = new PaymentRequestDto
             {
-                OrderId = request.OrderId,
+                OrderId = orderId,  // به صورت long
                 Amount = request.Amount,
-                PayerId = request.PayerId
+                PayerId = payerId  // تبدیل Ticks به string برای PayerId
             };
 
             try
@@ -279,6 +281,7 @@ namespace api.Controllers
                 return StatusCode(500, new { Message = "Internal server error during payment request processing." });
             }
         }
+        
 
         [HttpPost("RenewPackage")]
         public async Task<IActionResult> RenewPackage([FromBody] ExtendedPaymentRequestDto request)
@@ -288,6 +291,9 @@ namespace api.Controllers
                 _logger.LogWarning("Invalid model state for Package Renewal Request: {@Request}", request);
                 return BadRequest(ModelState);
             }
+
+            string payerId = DateTime.UtcNow.Ticks.ToString();  // تبدیل Ticks به string
+            long orderId = DateTime.UtcNow.Ticks;  // استفاده از Ticks برای OrderId به صورت long
 
             // Validate essential fields
             if (request.Amount <= 0 || !request.UserId.HasValue || !request.PackageId.HasValue)
@@ -333,7 +339,8 @@ namespace api.Controllers
                 Status = "Pending",
                 TransactionType = "Renewal",
                 PaymentGateway = "Melat",
-                Description = $"Package renewal payment for PackageId: {request.PackageId.Value}"
+                Description = $"Package renewal payment for PackageId: {request.PackageId.Value}",
+                OrderId = orderId
             };
 
             try
@@ -350,9 +357,9 @@ namespace api.Controllers
             // Prepare payment request
             var gatewayRequest = new PaymentRequestDto
             {
-                OrderId = request.OrderId,
+                OrderId = orderId,  // به صورت long
                 Amount = request.Amount,
-                PayerId = request.PayerId
+                PayerId = payerId  // تبدیل Ticks به string برای PayerId
             };
 
             try
@@ -387,116 +394,228 @@ namespace api.Controllers
         }
 
         [HttpPost("UpgradePackage")]
-public async Task<IActionResult> UpgradePackage([FromBody] UpgradePackageRequestDto request)
-{
-    if (!ModelState.IsValid)
-    {
-        _logger.LogWarning("Invalid model state for Package Upgrade Request: {@Request}", request);
-        return BadRequest(ModelState);
-    }
+        public async Task<IActionResult> UpgradePackage([FromBody] UpgradePackageRequestDto request)
+        {
+            if (!ModelState.IsValid)
+            {
+                _logger.LogWarning("Invalid model state for Package Upgrade Request: {@Request}", request);
+                return BadRequest(ModelState);
+            }
 
-    // Validate essential fields
-    if (request.UserId <= 0 || request.PackageId <= 0 || request.NewPackageId <= 0 || request.OrderId <= 0 || string.IsNullOrEmpty(request.PayerId))
-    {
-        _logger.LogWarning("Invalid request parameters for Package Upgrade: {@Request}", request);
-        return BadRequest(new { Message = "Invalid request parameters." });
-    }
+            string payerId = DateTime.UtcNow.Ticks.ToString();  // تبدیل Ticks به string
+            long orderId = DateTime.UtcNow.Ticks;  // استفاده از Ticks برای OrderId به صورت long
 
-    // Check if user exists
-    var user = await _dbContext.users.FirstOrDefaultAsync(u => u.Id == request.UserId);
-    if (user == null)
-    {
-        _logger.LogWarning("User not found for Package Upgrade: {@Request}", request);
-        return BadRequest(new { Message = "User not found." });
-    }
+            // Validate essential fields
+            if (request.UserId <= 0 || request.PackageId <= 0 || request.NewPackageId <= 0 || request.OrderId <= 0 || string.IsNullOrEmpty(request.PayerId))
+            {
+                _logger.LogWarning("Invalid request parameters for Package Upgrade: {@Request}", request);
+                return BadRequest(new { Message = "Invalid request parameters." });
+            }
 
-    // Check if new package exists and is more expensive than the current package
-    var currentPackage = await _dbContext.packages.FirstOrDefaultAsync(p => p.Id == request.PackageId);
-    var newPackage = await _dbContext.packages.FirstOrDefaultAsync(p => p.Id == request.NewPackageId);
-    if (newPackage == null || newPackage.Price <= currentPackage.Price)
-    {
-        _logger.LogWarning("New package not found or not more expensive for Package Upgrade: {@Request}", request);
-        return BadRequest(new { Message = "New package not found or not more expensive." });
-    }
+            // Check if user exists
+            var user = await _dbContext.users.FirstOrDefaultAsync(u => u.Id == request.UserId);
+            if (user == null)
+            {
+                _logger.LogWarning("User not found for Package Upgrade: {@Request}", request);
+                return BadRequest(new { Message = "User not found." });
+            }
 
-    // Find current active package
-    var currentUserPackage = await _dbContext.UserPackages
-        .FirstOrDefaultAsync(up => up.UserId == request.UserId && up.IsActive);
-    if (currentUserPackage == null)
-    {
-        _logger.LogWarning("No active package found for upgrade: {@Request}", request);
-        return BadRequest(new { Message = "No active package found to upgrade." });
-    }
+            // Check if new package exists and is more expensive than the current package
+            var currentPackage = await _dbContext.packages.FirstOrDefaultAsync(p => p.Id == request.PackageId);
+            var newPackage = await _dbContext.packages.FirstOrDefaultAsync(p => p.Id == request.NewPackageId);
+            if (newPackage == null || newPackage.Price <= currentPackage.Price)
+            {
+                _logger.LogWarning("New package not found or not more expensive for Package Upgrade: {@Request}", request);
+                return BadRequest(new { Message = "New package not found or not more expensive." });
+            }
+
+            // Find current active package
+            var currentUserPackage = await _dbContext.UserPackages
+                .FirstOrDefaultAsync(up => up.UserId == request.UserId && up.IsActive);
+            if (currentUserPackage == null)
+            {
+                _logger.LogWarning("No active package found for upgrade: {@Request}", request);
+                return BadRequest(new { Message = "No active package found to upgrade." });
+            }
 
             // Calculate the price difference
             var priceDifference = (long)(newPackage.Price - currentPackage.Price);
 
             // Create pending factor
             var factor = new Factors
-    {
-        UserId = request.UserId,
-        PackageId = request.NewPackageId,
-        UserPackageId = currentUserPackage.Id,
-        TransactionDate = DateTime.UtcNow,
-        Amount = priceDifference,
-        Status = "Pending",
-        TransactionType = "Upgrade",
-        PaymentGateway = "Melat",
-        Description = $"Package upgrade payment from PackageId: {currentUserPackage.PackageId} to PackageId: {request.NewPackageId}"
-    };
+            {
+                UserId = request.UserId,
+                PackageId = request.NewPackageId,
+                UserPackageId = currentUserPackage.Id,
+                TransactionDate = DateTime.UtcNow,
+                Amount = priceDifference,
+                Status = "Pending",
+                TransactionType = "Upgrade",
+                PaymentGateway = "Melat",
+                Description = $"Package upgrade payment from PackageId: {currentUserPackage.PackageId} to PackageId: {request.NewPackageId}",
+                OrderId = orderId
 
-    try
-    {
-        _dbContext.Factors.Add(factor);
-        await _dbContext.SaveChangesAsync();
-    }
-    catch (Exception ex)
-    {
-        _logger.LogError(ex, "Error saving factor for Package Upgrade: {@Request}", request);
-        return StatusCode(500, new { Message = "Internal server error while saving payment data." });
-    }
+            };
 
-    // Prepare payment request
-    var gatewayRequest = new PaymentRequestDto
-    {
-        OrderId = request.OrderId,
-        Amount = priceDifference,
-        PayerId = request.PayerId
-    };
+            try
+            {
+                _dbContext.Factors.Add(factor);
+                await _dbContext.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error saving factor for Package Upgrade: {@Request}", request);
+                return StatusCode(500, new { Message = "Internal server error while saving payment data." });
+            }
 
-    try
-    {
-var result = await _paymentService.PayRequestAsync(gatewayRequest);
-if (result.Success)
-{
-    factor.TrackingNumber = result.RefId;
-    _dbContext.Factors.Update(factor);
-    await _dbContext.SaveChangesAsync();
+            // Prepare payment request
+            var gatewayRequest = new PaymentRequestDto
+            {
+                OrderId = orderId,
+                Amount = priceDifference,
+                PayerId = payerId
+            };
 
-    var gatewayUrl = $"https://bpm.shaparak.ir/pgwchannel/startpay.mellat?RefId={result.RefId}";
-    return Ok(new
-    {
-        Message = "Upgrade request successful",
-        RefId = result.RefId,
-        GatewayUrl = gatewayUrl
-    });
-}
-else
-{
-    _logger.LogWarning("Payment service returned error for Package Upgrade: {@Request}, Error: {Error}",
-        request, result.Message);
-    return BadRequest(new { Message = result.Message });
-}
-}
-catch (Exception ex)
-{
-    _logger.LogError(ex, "Error occurred during upgrade payment processing: {@Request}", request);
-    return StatusCode(500, new { Message = "Internal server error during payment processing." });
-}
-}
-        // اضافه کردن اپدیت و تمدید
+            try
+            {
+                var result = await _paymentService.PayRequestAsync(gatewayRequest);
+                if (result.Success)
+                {
+                    factor.TrackingNumber = result.RefId;
+                    _dbContext.Factors.Update(factor);
+                    await _dbContext.SaveChangesAsync();
 
-        // Update the Callback method to handle renewals and upgrades
+                    var gatewayUrl = $"https://bpm.shaparak.ir/pgwchannel/startpay.mellat?RefId={result.RefId}";
+                    return Ok(new
+                    {
+                        Message = "Upgrade request successful",
+                        RefId = result.RefId,
+                        GatewayUrl = gatewayUrl
+                    });
+                }
+                else
+                {
+                    _logger.LogWarning("Payment service returned error for Package Upgrade: {@Request}, Error: {Error}",
+                        request, result.Message);
+                    return BadRequest(new { Message = result.Message });
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred during upgrade payment processing: {@Request}", request);
+                return StatusCode(500, new { Message = "Internal server error during payment processing." });
+            }
+        }
+
+
+        // [HttpPost("Callback")]
+        // public async Task<IActionResult> Callback()
+        // {
+        //     try
+        //     {
+        //         var resCode = Request.Form["ResCode"].ToString();
+        //         var refId = Request.Form["RefId"].ToString();
+        //         var orderId = Convert.ToInt64(Request.Form["OrderId"]);
+        //         var saleOrderId = Convert.ToInt64(Request.Form["SaleOrderId"]);
+        //         var saleReferenceId = Convert.ToInt64(Request.Form["SaleReferenceId"]);
+
+        //         var successRedirect = new UriBuilder("https://new.tarhimcode.ir/payment-success");
+        //         var failureRedirect = new UriBuilder("https://new.tarhimcode.ir/payment-failure");
+
+        //         var query = HttpUtility.ParseQueryString(string.Empty);
+        //         query["refId"] = refId;
+        //         query["orderId"] = orderId.ToString();
+
+        //         if (resCode == "0")
+        //         {
+        //             var verifyResult = await _paymentService.VerifyRequestAsync(new VerifyRequestDto
+        //             {
+        //                 OrderId = orderId,
+        //                 SaleOrderId = saleOrderId,
+        //                 SaleReferenceId = saleReferenceId
+        //             });
+
+        //             if (verifyResult.Success)
+        //             {
+        //                 var factor = await _dbContext.Factors
+        //                     .FirstOrDefaultAsync(f => f.TrackingNumber == refId);
+
+        //                 if (factor != null)
+        //                 {
+        //                     factor.Status = "Success";
+        //                     factor.PaidAt = DateTime.UtcNow;
+        //                     factor.OrderId = orderId;
+        //                     _dbContext.Factors.Update(factor);
+
+        //                     try
+        //                     {
+        //                         await _dbContext.SaveChangesAsync();
+
+        //                         if (factor.PackageId.HasValue)
+        //                         {
+        //                             var package = await _dbContext.packages
+        //                                 .FirstOrDefaultAsync(p => p.Id == factor.PackageId.Value);
+
+        //                             if (package != null)
+        //                             {
+        //                                 switch (factor.TransactionType)
+        //                                 {
+        //                                     case "Register":
+        //                                         // Existing logic for new package registration
+        //                                         await HandleNewPackageRegistration(factor, package);
+        //                                         break;
+
+        //                                     case "Renewal":
+        //                                         // Handle package renewal
+        //                                         await HandlePackageRenewal(factor, package);
+        //                                         break;
+
+        //                                     case "Upgrade":
+        //                                         // Handle package upgrade
+        //                                         await HandlePackageUpgrade(factor, package);
+        //                                         break;
+        //                                 }
+        //                             }
+        //                         }
+        //                     }
+        //                     catch (Exception ex)
+        //                     {
+        //                         _logger.LogError(ex, "Error processing package transaction for TrackingNumber: {RefId}", refId);
+        //                         return StatusCode(500, new { Message = "Internal server error while processing package transaction." });
+        //                     }
+
+        //                     successRedirect.Query = query.ToString();
+        //                     return Redirect(successRedirect.ToString());
+        //                 }
+        //             }
+        //         }
+
+        //         // Handle failed transaction
+        //         var failedFactor = await _dbContext.Factors.FirstOrDefaultAsync(f => f.TrackingNumber == refId);
+        //         if (failedFactor != null)
+        //         {
+        //             failedFactor.Status = "Failed";
+        //             failedFactor.Description = "Transaction failed with ResCode: " + resCode;
+        //             _dbContext.Factors.Update(failedFactor);
+        //             await _dbContext.SaveChangesAsync();
+        //         }
+
+        //         failureRedirect.Query = query.ToString();
+        //         return Redirect(failureRedirect.ToString());
+        //     }
+        //     catch (Exception ex)
+        //     {
+        //         _logger.LogError(ex, "Error occurred during Callback processing");
+        //         var failureRedirect = new UriBuilder("https://new.tarhimcode.ir/payment-failure");
+        //         var query = HttpUtility.ParseQueryString(string.Empty);
+        //         query["message"] = Uri.EscapeDataString(ex.Message);
+        //         failureRedirect.Query = query.ToString();
+        //         return Redirect(failureRedirect.ToString());
+        //     }
+        // }
+
+        // استفاده از سرویس های تمید و ارتقا و خرید در کالبک
+
         [HttpPost("Callback")]
         public async Task<IActionResult> Callback()
         {
@@ -550,18 +669,18 @@ catch (Exception ex)
                                         switch (factor.TransactionType)
                                         {
                                             case "Register":
-                                                // Existing logic for new package registration
-                                                await HandleNewPackageRegistration(factor, package);
+                                                // استفاده از سرویس برای ثبت پکیج جدید
+                                                await _packageTransactionService.HandleNewPackageRegistration(factor, package);
                                                 break;
 
                                             case "Renewal":
-                                                // Handle package renewal
-                                                await HandlePackageRenewal(factor, package);
+                                                // استفاده از سرویس برای تمدید پکیج
+                                                await _packageTransactionService.HandlePackageRenewal(factor, package);
                                                 break;
 
                                             case "Upgrade":
-                                                // Handle package upgrade
-                                                await HandlePackageUpgrade(factor, package);
+                                                // استفاده از سرویس برای ارتقاء پکیج
+                                                await _packageTransactionService.HandlePackageUpgrade(factor, package);
                                                 break;
                                         }
                                     }
@@ -602,6 +721,8 @@ catch (Exception ex)
                 return Redirect(failureRedirect.ToString());
             }
         }
+
+
 
         private async Task HandleNewPackageRegistration(Factors factor, Package package)
         {
@@ -666,38 +787,38 @@ catch (Exception ex)
 
 
         private async Task HandlePackageUpgrade(Factors factor, Package newPackage)
-{
-    // Find the current active package for the user
-    var currentUserPackage = await _dbContext.UserPackages
-        .FirstOrDefaultAsync(up => up.Id == factor.UserPackageId);
-
-    if (currentUserPackage != null)
-    {
-        // Deactivate the current package
-        currentUserPackage.IsActive = false;
-        _dbContext.UserPackages.Update(currentUserPackage);
-
-        // Create a new package with the upgraded features
-        var newUserPackage = new UserPackage
         {
-            UserId = factor.UserId,
-            PackageId = newPackage.Id,
-            // Preserve the original PurchaseDate and ExpiryDate
-            PurchaseDate = currentUserPackage.PurchaseDate,
-            ExpiryDate = currentUserPackage.ExpiryDate,
-            IsActive = true,
-            // Copy the usage counts from the previous package
-            UsedImageCount = currentUserPackage.UsedImageCount,
-            UsedVideoCount = currentUserPackage.UsedVideoCount,
-            UsedNotificationCount = currentUserPackage.UsedNotificationCount,
-            UsedAudioFileCount = currentUserPackage.UsedAudioFileCount
-        };
+            // Find the current active package for the user
+            var currentUserPackage = await _dbContext.UserPackages
+                .FirstOrDefaultAsync(up => up.Id == factor.UserPackageId);
 
-        // Add the new package and save the changes
-        _dbContext.UserPackages.Add(newUserPackage);
-        await _dbContext.SaveChangesAsync();
-    }
-}
+            if (currentUserPackage != null)
+            {
+                // Deactivate the current package
+                currentUserPackage.IsActive = false;
+                _dbContext.UserPackages.Update(currentUserPackage);
+
+                // Create a new package with the upgraded features
+                var newUserPackage = new UserPackage
+                {
+                    UserId = factor.UserId,
+                    PackageId = newPackage.Id,
+                    // Preserve the original PurchaseDate and ExpiryDate
+                    PurchaseDate = currentUserPackage.PurchaseDate,
+                    ExpiryDate = currentUserPackage.ExpiryDate,
+                    IsActive = true,
+                    // Copy the usage counts from the previous package
+                    UsedImageCount = currentUserPackage.UsedImageCount,
+                    UsedVideoCount = currentUserPackage.UsedVideoCount,
+                    UsedNotificationCount = currentUserPackage.UsedNotificationCount,
+                    UsedAudioFileCount = currentUserPackage.UsedAudioFileCount
+                };
+
+                // Add the new package and save the changes
+                _dbContext.UserPackages.Add(newUserPackage);
+                await _dbContext.SaveChangesAsync();
+            }
+        }
 
 
         // [HttpPost("Callback")]

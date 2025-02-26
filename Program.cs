@@ -2,6 +2,7 @@ using System.Text;
 using api.Context;
 using api.Middleware;
 using api.Services;
+using deathSite.Services.PackageService;
 using deathSite.Services.Payment;
 using deathSite.View.PaymentMelat;
 using deathSite.View.PaymentParsian;
@@ -129,6 +130,9 @@ builder.Services.AddScoped<IFileUploadService, FileUploadService>();
 builder.Services.AddScoped<IMelatPaymentService, MelatPaymentService>();
 
 builder.Services.AddScoped<IParsianPaymentService, ParsianPaymentService>();
+
+builder.Services.AddScoped<IPackageTransactionService, PackageTransactionService>();
+
 
 var app = builder.Build();
 

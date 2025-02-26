@@ -8,13 +8,12 @@ namespace deathSite.View.PaymentMelat
     public class ExtendedPaymentRequestDto
     {
         // فیلدهای مربوط به درگاه
-        public long OrderId { get; set; }
+        // public long OrderId { get; set; }
         public long Amount { get; set; }
-        public string PayerId { get; set; }
+        // public string PayerId { get; set; }
         
         // فیلدهای اضافی برای منطق داخلی (برای ثبت پکیج)
         public int? UserId { get; set; }
         public int? PackageId { get; set; }
-        // public string ActionType { get; set; }
     }   
 }
