@@ -145,5 +145,51 @@ namespace api.Services
 
             return Path.Combine(_uploadsFolder, entityType, entityId.ToString(), category);
         }
+
+        public async Task<string> SaveQRCodeAsync(byte[] fileBytes, string entityType, int entityId, string fileName)
+        {
+            // تعریف دسته‌بندی مخصوص QR Code (برای مثال: "qrcodes")
+            string category = "qrcodes";
+            // مسیر پوشه: wwwroot/uploads/{entityType}/{entityId}/qrcodes
+            string entityFolder = Path.Combine(_uploadsFolder, entityType, entityId.ToString(), category);
+
+            if (!Directory.Exists(entityFolder))
+            {
+                Directory.CreateDirectory(entityFolder);
+            }
+
+            string filePath = Path.Combine(entityFolder, fileName);
+            await File.WriteAllBytesAsync(filePath, fileBytes);
+
+            // بازگرداندن URL نسبی فایل ذخیره شده
+            return $"/uploads/{entityType}/{entityId}/{category}/{fileName}";
+        }
+
+        public async Task DeleteQRCodeAsync(string fileName, string entityType, int entityId)
+        {
+            try
+            {
+                // دسته‌بندی QR Code
+                string category = "qrcodes";
+                // مسیر پوشه: wwwroot/uploads/{entityType}/{entityId}/qrcodes
+                string entityFolder = Path.Combine(_uploadsFolder, entityType, entityId.ToString(), category);
+
+                string filePath = Path.Combine(entityFolder, fileName);
+
+                if (File.Exists(filePath))
+                {
+                    File.Delete(filePath);
+                }
+                else
+                {
+                    throw new FileNotFoundException("فایل QR Code پیدا نشد.");
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException($"در هنگام حذف فایل QR Code خطایی رخ داده است: {ex.Message}", ex);
+            }
+        }
+
     }
 }

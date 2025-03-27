@@ -44,9 +44,6 @@ namespace api.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("IsApproved")
-                        .HasColumnType("bit");
-
                     b.Property<string>("MessageText")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -54,6 +51,9 @@ namespace api.Migrations
                     b.Property<string>("PhoneNumber")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
 
                     b.Property<int?>("UserId")
                         .HasColumnType("int");
@@ -212,6 +212,10 @@ namespace api.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("FilePath")
                         .HasColumnType("nvarchar(max)");
 
@@ -268,54 +272,102 @@ namespace api.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("Age")
-                        .HasColumnType("int");
+                    b.Property<string>("Aramestan")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("DateOfBirth")
+                    b.Property<DateTime>("BirthDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("DateOfMartyrdom")
+                    b.Property<string>("ChildrenNames")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CityMazar")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CoverPhotoUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("DateOfBirth")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DateOfMartyrdom")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FatherName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FullName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("FirstName")
-                        .IsRequired()
+                    b.Property<string>("Gender")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Ghaleb")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("GhesteMazar")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("HowDeath")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("IsApproved")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Job")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Khaterat")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("LastName")
-                        .IsRequired()
+                    b.Property<string>("NumberMazar")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("OstanMazar")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PhotoUrls")
-                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PlaceBirth")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PlaceOfMartyrdom")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("PublishedDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("QRCodeUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("RadifMazar")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("SarbargId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Tahsilat")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("UserId")
                         .HasColumnType("int");
 
                     b.Property<string>("VideoUrls")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("VoiceUrls")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("SarbargId")
+                        .IsUnique()
+                        .HasFilter("[SarbargId] IS NOT NULL");
 
                     b.HasIndex("UserId");
 
@@ -379,6 +431,9 @@ namespace api.Migrations
                     b.Property<int>("ImageCount")
                         .HasColumnType("int");
 
+                    b.Property<bool>("IsFreePackage")
+                        .HasColumnType("bit");
+
                     b.Property<bool>("LocationAndNavigationEnabled")
                         .HasColumnType("bit");
 
@@ -426,6 +481,10 @@ namespace api.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Approved")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Biography")
                         .IsRequired()
@@ -503,6 +562,9 @@ namespace api.Migrations
 
                     b.Property<string>("PoemVerseTwo")
                         .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("RejectionReason")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Responsibilities")
@@ -616,6 +678,202 @@ namespace api.Migrations
                     b.ToTable("userTokens");
                 });
 
+            modelBuilder.Entity("deathSite.Model.AdminModel.AboutUs", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ImageUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("Poshtiban")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("Sabeghe")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ShahidSabt")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Title")
+                        .HasMaxLength(550)
+                        .HasColumnType("nvarchar(550)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("aboutUs");
+                });
+
+            modelBuilder.Entity("deathSite.Model.CondolenceReply", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AuthorName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("CondolenceMessageId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ReplyText")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CondolenceMessageId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("CondolenceReplies");
+                });
+
+            modelBuilder.Entity("deathSite.Model.DeathViewCount", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("DeceasedId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("IPAddress")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("UserId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("ViewDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DeceasedId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("DeathViewCounts");
+                });
+
+            modelBuilder.Entity("deathSite.Model.DeceasedLocation", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Balad")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("DeceasedId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("GoogleMap")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Mokhtasat")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Neshan")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DeceasedId")
+                        .IsUnique();
+
+                    b.ToTable("DeceasedLocations");
+                });
+
+            modelBuilder.Entity("deathSite.Model.DeceasedPackage", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("ActivationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("DeceasedId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("ExpirationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("FactorId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsFreePackage")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("PackageId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DeceasedId");
+
+                    b.HasIndex("FactorId");
+
+                    b.HasIndex("PackageId");
+
+                    b.ToTable("DeceasedPackages");
+                });
+
+            modelBuilder.Entity("deathSite.Model.Elamieh", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("DeceasedId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("PhotoUrls")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DeceasedId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Elamiehs");
+                });
+
             modelBuilder.Entity("deathSite.Model.Factors", b =>
                 {
                     b.Property<int>("Id")
@@ -627,13 +885,16 @@ namespace api.Migrations
                     b.Property<decimal>("Amount")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<int?>("DeceasedId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<long>("OrderId")
                         .HasColumnType("bigint");
 
-                    b.Property<int?>("PackageId")
+                    b.Property<int>("PackageId")
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("PaidAt")
@@ -660,16 +921,50 @@ namespace api.Migrations
                     b.Property<int>("UserId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("UserPackageId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
+
+                    b.HasIndex("PackageId");
 
                     b.HasIndex("UserId");
 
-                    b.HasIndex("UserPackageId");
-
                     b.ToTable("Factors");
+                });
+
+            modelBuilder.Entity("deathSite.Model.GolestanShohadaSection", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Icon")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Link")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("GolestanShohadaSections");
+                });
+
+            modelBuilder.Entity("deathSite.Model.LikeDeceased", b =>
+                {
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("DeceasedId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("LikedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("UserId", "DeceasedId");
+
+                    b.HasIndex("DeceasedId");
+
+                    b.ToTable("LikeDeceaseds");
                 });
 
             modelBuilder.Entity("deathSite.Model.PaymentSettings", b =>
@@ -716,12 +1011,16 @@ namespace api.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Link")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("Id");
 
                     b.ToTable("posters");
                 });
 
-            modelBuilder.Entity("deathSite.Model.UserPackage", b =>
+            modelBuilder.Entity("deathSite.Model.Sarbarg", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -729,40 +1028,116 @@ namespace api.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime>("ExpiryDate")
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Sarbarg");
+                });
+
+            modelBuilder.Entity("deathSite.Model.SavedDeceased", b =>
+                {
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("DeceasedId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("SavedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
+                    b.HasKey("UserId", "DeceasedId");
 
-                    b.Property<int>("PackageId")
+                    b.HasIndex("DeceasedId");
+
+                    b.ToTable("SavedDeceaseds");
+                });
+
+            modelBuilder.Entity("deathSite.Model.ShahidUpdateRequest", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("PurchaseDate")
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Biography")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("UsedAudioFileCount")
+                    b.Property<string>("Memories")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PhotoUrls")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ShahidId")
                         .HasColumnType("int");
 
-                    b.Property<int>("UsedImageCount")
-                        .HasColumnType("int");
-
-                    b.Property<int>("UsedNotificationCount")
-                        .HasColumnType("int");
-
-                    b.Property<int>("UsedVideoCount")
-                        .HasColumnType("int");
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("UserId")
                         .HasColumnType("int");
 
+                    b.Property<string>("VideoUrls")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("VoiceUrls")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Will")
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("PackageId");
+                    b.HasIndex("ShahidId");
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("UserPackages");
+                    b.ToTable("ShahidUpdateRequests");
+                });
+
+            modelBuilder.Entity("deathSite.Model.ShahidViewCount", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("IPAddress")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ShahidId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("UserId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("ViewDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ShahidId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("ShahidViewCounts");
                 });
 
             modelBuilder.Entity("CondolenceMessage", b =>
@@ -785,11 +1160,18 @@ namespace api.Migrations
 
             modelBuilder.Entity("api.Model.Deceased", b =>
                 {
+                    b.HasOne("deathSite.Model.Sarbarg", "Sarbarg")
+                        .WithOne("Deceased")
+                        .HasForeignKey("api.Model.Deceased", "SarbargId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("api.Model.User", "User")
                         .WithMany("Deceaseds")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.Navigation("Sarbarg");
 
                     b.Navigation("User");
                 });
@@ -824,34 +1206,107 @@ namespace api.Migrations
                     b.Navigation("Tag");
                 });
 
-            modelBuilder.Entity("deathSite.Model.Factors", b =>
+            modelBuilder.Entity("deathSite.Model.CondolenceReply", b =>
                 {
+                    b.HasOne("CondolenceMessage", "CondolenceMessage")
+                        .WithMany("Replies")
+                        .HasForeignKey("CondolenceMessageId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("api.Model.User", "User")
-                        .WithMany("Factors")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("CondolenceMessage");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("deathSite.Model.DeathViewCount", b =>
+                {
+                    b.HasOne("api.Model.Deceased", "Deceased")
+                        .WithMany("DeathViews")
+                        .HasForeignKey("DeceasedId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("api.Model.User", "User")
+                        .WithMany("DeathViews")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.Navigation("Deceased");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("deathSite.Model.DeceasedLocation", b =>
+                {
+                    b.HasOne("api.Model.Deceased", "Deceased")
+                        .WithOne("DeceasedLocation")
+                        .HasForeignKey("deathSite.Model.DeceasedLocation", "DeceasedId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Deceased");
+                });
+
+            modelBuilder.Entity("deathSite.Model.DeceasedPackage", b =>
+                {
+                    b.HasOne("api.Model.Deceased", "Deceased")
+                        .WithMany("Packages")
+                        .HasForeignKey("DeceasedId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("deathSite.Model.Factors", "Factor")
+                        .WithMany("DeceasedPackages")
+                        .HasForeignKey("FactorId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("api.Model.Package", "Package")
+                        .WithMany("DeceasedPackages")
+                        .HasForeignKey("PackageId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Deceased");
+
+                    b.Navigation("Factor");
+
+                    b.Navigation("Package");
+                });
+
+            modelBuilder.Entity("deathSite.Model.Elamieh", b =>
+                {
+                    b.HasOne("api.Model.Deceased", "Deceased")
+                        .WithMany("Elamiehs")
+                        .HasForeignKey("DeceasedId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("api.Model.User", "User")
+                        .WithMany("Elamiehs")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("deathSite.Model.UserPackage", "UserPackage")
-                        .WithMany("Factors")
-                        .HasForeignKey("UserPackageId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                    b.Navigation("Deceased");
 
                     b.Navigation("User");
-
-                    b.Navigation("UserPackage");
                 });
 
-            modelBuilder.Entity("deathSite.Model.UserPackage", b =>
+            modelBuilder.Entity("deathSite.Model.Factors", b =>
                 {
                     b.HasOne("api.Model.Package", "Package")
-                        .WithMany("UserPackages")
+                        .WithMany("Factors")
                         .HasForeignKey("PackageId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("api.Model.User", "User")
-                        .WithMany("UserPackages")
+                        .WithMany("Factors")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -859,6 +1314,86 @@ namespace api.Migrations
                     b.Navigation("Package");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("deathSite.Model.LikeDeceased", b =>
+                {
+                    b.HasOne("api.Model.Deceased", "Deceased")
+                        .WithMany("LikedByUsers")
+                        .HasForeignKey("DeceasedId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("api.Model.User", "User")
+                        .WithMany("LikedDeceaseds")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Deceased");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("deathSite.Model.SavedDeceased", b =>
+                {
+                    b.HasOne("api.Model.Deceased", "Deceased")
+                        .WithMany("SavedByUsers")
+                        .HasForeignKey("DeceasedId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("api.Model.User", "User")
+                        .WithMany("SavedDeceaseds")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Deceased");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("deathSite.Model.ShahidUpdateRequest", b =>
+                {
+                    b.HasOne("api.Model.Shahid", "Shahid")
+                        .WithMany("UpdateRequests")
+                        .HasForeignKey("ShahidId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("api.Model.User", "User")
+                        .WithMany("ShahidUpdateRequests")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Shahid");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("deathSite.Model.ShahidViewCount", b =>
+                {
+                    b.HasOne("api.Model.Shahid", "Shahid")
+                        .WithMany("ShahidViews")
+                        .HasForeignKey("ShahidId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("api.Model.User", "User")
+                        .WithMany("ShahidViews")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.Navigation("Shahid");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("CondolenceMessage", b =>
+                {
+                    b.Navigation("Replies");
                 });
 
             modelBuilder.Entity("api.Model.AdminModel.Tag", b =>
@@ -869,34 +1404,67 @@ namespace api.Migrations
             modelBuilder.Entity("api.Model.Deceased", b =>
                 {
                     b.Navigation("CondolenceMessages");
+
+                    b.Navigation("DeathViews");
+
+                    b.Navigation("DeceasedLocation");
+
+                    b.Navigation("Elamiehs");
+
+                    b.Navigation("LikedByUsers");
+
+                    b.Navigation("Packages");
+
+                    b.Navigation("SavedByUsers");
                 });
 
             modelBuilder.Entity("api.Model.Package", b =>
                 {
-                    b.Navigation("UserPackages");
+                    b.Navigation("DeceasedPackages");
+
+                    b.Navigation("Factors");
                 });
 
             modelBuilder.Entity("api.Model.Shahid", b =>
                 {
                     b.Navigation("ShahidTags");
+
+                    b.Navigation("ShahidViews");
+
+                    b.Navigation("UpdateRequests");
                 });
 
             modelBuilder.Entity("api.Model.User", b =>
                 {
                     b.Navigation("CondolenceMessages");
 
+                    b.Navigation("DeathViews");
+
                     b.Navigation("Deceaseds");
 
+                    b.Navigation("Elamiehs");
+
                     b.Navigation("Factors");
+
+                    b.Navigation("LikedDeceaseds");
+
+                    b.Navigation("SavedDeceaseds");
+
+                    b.Navigation("ShahidUpdateRequests");
+
+                    b.Navigation("ShahidViews");
 
                     b.Navigation("Shahids");
-
-                    b.Navigation("UserPackages");
                 });
 
-            modelBuilder.Entity("deathSite.Model.UserPackage", b =>
+            modelBuilder.Entity("deathSite.Model.Factors", b =>
                 {
-                    b.Navigation("Factors");
+                    b.Navigation("DeceasedPackages");
+                });
+
+            modelBuilder.Entity("deathSite.Model.Sarbarg", b =>
+                {
+                    b.Navigation("Deceased");
                 });
 #pragma warning restore 612, 618
         }

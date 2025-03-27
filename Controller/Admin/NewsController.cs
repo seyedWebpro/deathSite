@@ -7,6 +7,7 @@ using api.Context;
 using api.Model;
 using api.Services;
 using api.View.News;
+using deathSite.View.News;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -155,6 +156,55 @@ namespace api.Controller.Admin
                 _logger.LogError(ex, "An error occurred while deleting news with id {NewsId}.", id);
                 return StatusCode(500, new { Message = "خطای داخلی سرور.", Error = ex.Message, StatusCode = 500 });
             }
+        }
+
+
+        // ویرایش خبر موجود با فیلدهای اختیاری
+        [HttpPut("update/{id}")]
+        public async Task<IActionResult> UpdateNews(int id, [FromForm] UpdateNewsDto updateNewsDto, IFormFile? file)
+        {
+            var news = await _context.News.FindAsync(id);
+            if (news == null)
+            {
+                return NotFound(new { Message = "خبر یافت نشد.", StatusCode = 404 });
+            }
+
+            // به‌روزرسانی فیلدها در صورت ارسال مقدار جدید
+            if (!string.IsNullOrEmpty(updateNewsDto.Title))
+            {
+                news.Title = updateNewsDto.Title;
+            }
+            if (!string.IsNullOrEmpty(updateNewsDto.Content))
+            {
+                news.Content = updateNewsDto.Content;
+            }
+
+            // به‌روزرسانی تاریخ انتشار
+            news.PublishedDate = DateTime.UtcNow;
+
+            // آپلود فایل جدید در صورت ارسال فایل
+            if (file != null)
+            {
+                // حذف فایل قبلی در صورت وجود
+                if (!string.IsNullOrEmpty(news.FilePath))
+                {
+                    string oldFileName = Path.GetFileName(news.FilePath);
+                    try
+                    {
+                        await _fileUploadService.DeleteFileAsync(oldFileName, "news", id);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogWarning(ex, "خطا در حذف فایل قبلی {FilePath}", news.FilePath);
+                    }
+                }
+                news.FilePath = await _fileUploadService.UploadFileAsync(file, "news", news.Id);
+            }
+
+            _context.News.Update(news);
+            await _context.SaveChangesAsync();
+
+            return Ok(new { Message = "خبر با موفقیت به روز شد.", Data = news, StatusCode = 200 });
         }
 
 

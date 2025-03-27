@@ -4,6 +4,7 @@ using api.Middleware;
 using api.Services;
 using deathSite.Services.PackageService;
 using deathSite.Services.Payment;
+using deathSite.Services.QRCode;
 using deathSite.View.PaymentMelat;
 using deathSite.View.PaymentParsian;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -132,6 +133,9 @@ builder.Services.AddScoped<IMelatPaymentService, MelatPaymentService>();
 builder.Services.AddScoped<IParsianPaymentService, ParsianPaymentService>();
 
 builder.Services.AddScoped<IPackageTransactionService, PackageTransactionService>();
+
+builder.Services.AddScoped<IQRCodeService, QRCodeService>();
+
 
 
 var app = builder.Build();

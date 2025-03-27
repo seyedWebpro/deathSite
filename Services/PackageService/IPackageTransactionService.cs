@@ -7,11 +7,12 @@ using deathSite.Model;
 
 namespace deathSite.Services.PackageService
 {
-    public interface IPackageTransactionService
-    {
-        Task HandleNewPackageRegistration(Factors factor, Package package);
-        Task HandlePackageRenewal(Factors factor, Package package);
-        Task HandlePackageUpgrade(Factors factor, Package newPackage);
-    }
+   public interface IPackageTransactionService
+{
+    Task<DeceasedPackage> HandleNewPackageRegistration(Factors factor, Package package);
+    Task HandlePackageRenewal(Factors factor, Package package);
+    Task HandlePackageUpgrade(Factors factor, Package newPackage);
+}
+
 
 }

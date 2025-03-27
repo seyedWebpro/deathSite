@@ -10,10 +10,7 @@ namespace deathSite.Model
     {
         public int Id { get; set; }
 
-        public int UserId { get; set; }
-
-        public int? UserPackageId { get; set; }  // می‌تواند null باشد برای پرداخت‌های غیر مرتبط با پکیج
-        public int? PackageId { get; set; }  // فیلد جدید برای ذخیره شناسه پکیج
+        public int? DeceasedId { get; set; } // اضافه شده برای ارتباط با متوفی
 
         // تاریخ تراکنش
         public DateTime TransactionDate { get; set; }
@@ -42,7 +39,14 @@ namespace deathSite.Model
         // شناسه سفارش (در صورت نیاز به ردیابی تراکنش با سفارش خاص)
         public long OrderId { get; set; }
 
+
+        public int UserId { get; set; }
         public User User { get; set; }
-        public UserPackage? UserPackage { get; set; }  // رابطه با پکیج کاربر (اختیاری)
+
+        public int PackageId { get; set; }
+        public Package Package { get; set; }
+
+        // رابطه با DeceasedPackage
+        public List<DeceasedPackage> DeceasedPackages { get; set; } = new List<DeceasedPackage>();
     }
 }

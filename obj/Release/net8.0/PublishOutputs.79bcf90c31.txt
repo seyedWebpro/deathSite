@@ -54,6 +54,7 @@ D:\DeadWebsit\api\deathSite\bin\Release\net8.0\publish\Microsoft.SqlServer.Serve
 D:\DeadWebsit\api\deathSite\bin\Release\net8.0\publish\Microsoft.Win32.SystemEvents.dll
 D:\DeadWebsit\api\deathSite\bin\Release\net8.0\publish\Mono.TextTemplating.dll
 D:\DeadWebsit\api\deathSite\bin\Release\net8.0\publish\Newtonsoft.Json.dll
+D:\DeadWebsit\api\deathSite\bin\Release\net8.0\publish\QRCoder.dll
 D:\DeadWebsit\api\deathSite\bin\Release\net8.0\publish\SmsIrRestfulNetCore.dll
 D:\DeadWebsit\api\deathSite\bin\Release\net8.0\publish\Swashbuckle.AspNetCore.Swagger.dll
 D:\DeadWebsit\api\deathSite\bin\Release\net8.0\publish\Swashbuckle.AspNetCore.SwaggerGen.dll

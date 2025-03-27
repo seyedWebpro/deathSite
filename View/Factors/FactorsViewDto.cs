@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace deathSite.View.Factors
 {
-    public class FactorsViewDto
+      public class FactorsViewDto
     {
         public int Id { get; set; }
         
@@ -13,7 +13,7 @@ namespace deathSite.View.Factors
         
         public int? UserPackageId { get; set; }
         
-        public string? UserName { get; set; }
+        public string? UserName { get; set; } // اضافه کردن نام کاربر
         
         public DateTime TransactionDate { get; set; }
         
@@ -30,5 +30,10 @@ namespace deathSite.View.Factors
         public string Description { get; set; }
         
         public long OrderId { get; set; }
+
+        // تغییرات جدید برای پشتیبانی از چند متوفی
+        public List<int>? DeceasedIds { get; set; } = new List<int>();
+
+        public List<string>? DeceasedNames { get; set; } = new List<string>();
     }
 }

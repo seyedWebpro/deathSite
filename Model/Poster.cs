@@ -7,8 +7,9 @@ namespace deathSite.Model
 {
     public class Poster
     {
-         public int Id { get; set; } // شناسه پوستر
-    public string FilePath { get; set; } // مسیر فایل
-    public string Category { get; set; } // دسته‌بندی (People یا Shahid)
+        public int Id { get; set; } // شناسه پوستر
+        public string FilePath { get; set; } // مسیر فایل
+        public string Category { get; set; } // دسته‌بندی (People یا Shahid)
+        public string Link { get; set; } // لینک مربوط به پوستر
     }
 }

@@ -27,7 +27,7 @@ namespace deathSite.Controller
 
         // POST: api/Posters/People/upload
         [HttpPost("People/upload")]
-        public async Task<IActionResult> UploadPeoplePoster(IFormFile file)
+        public async Task<IActionResult> UploadPeoplePoster(IFormFile file, [FromForm] string link)
         {
             if (file == null || file.Length == 0)
             {
@@ -41,11 +41,12 @@ namespace deathSite.Controller
             {
                 // آپلود پوستر افراد
                 string uploadedFilePath = await _fileUploadService.UploadFileAsync(file, "PeoplePoster", 0);
-                // ایجاد شی پوستر و ذخیره در دیتابیس
+                // ایجاد شی پوستر و ذخیره در دیتابیس به همراه لینک
                 var poster = new Poster
                 {
                     FilePath = uploadedFilePath,
-                    Category = "PeoplePoster"
+                    Category = "PeoplePoster",
+                    Link = link // مقدار لینک دریافت شده از فرم
                 };
                 _context.posters.Add(poster);
                 await _context.SaveChangesAsync();
@@ -64,11 +65,12 @@ namespace deathSite.Controller
         {
             var posters = await _context.posters
                 .Where(p => p.Category == "PeoplePoster")
-                .Select(p => new { p.Id, p.FilePath })
+                .Select(p => new { p.Id, p.FilePath, p.Link })  // اضافه کردن p.Link
                 .ToListAsync();
 
             return Ok(new { Message = "لیست پوسترهای افراد بازیابی شد.", Data = posters, StatusCode = 200 });
         }
+
 
         // GET: api/Posters/People/{id}/file
         [HttpGet("People/{id}/file")]
@@ -129,7 +131,7 @@ namespace deathSite.Controller
 
         // POST: api/Posters/Shahid/upload
         [HttpPost("Shahid/upload")]
-        public async Task<IActionResult> UploadShahidPoster(IFormFile file)
+        public async Task<IActionResult> UploadShahidPoster(IFormFile file, [FromForm] string link)
         {
             if (file == null || file.Length == 0)
             {
@@ -143,11 +145,12 @@ namespace deathSite.Controller
             {
                 // آپلود پوستر شهید
                 string uploadedFilePath = await _fileUploadService.UploadFileAsync(file, "ShahidPoster", 0);
-                // ایجاد شی پوستر و ذخیره در دیتابیس
+                // ایجاد شی پوستر و ذخیره در دیتابیس به همراه لینک
                 var poster = new Poster
                 {
                     FilePath = uploadedFilePath,
-                    Category = "ShahidPoster"
+                    Category = "ShahidPoster",
+                    Link = link
                 };
                 _context.posters.Add(poster);
                 await _context.SaveChangesAsync();
@@ -161,17 +164,19 @@ namespace deathSite.Controller
         }
 
 
+
         // GET: api/Posters/Shahid
         [HttpGet("Shahid")]
         public async Task<IActionResult> GetShahidPosters()
         {
             var posters = await _context.posters
                 .Where(p => p.Category == "ShahidPoster")
-                .Select(p => new { p.Id, p.FilePath })
+                .Select(p => new { p.Id, p.FilePath, p.Link })  // اضافه کردن p.Link
                 .ToListAsync();
 
             return Ok(new { Message = "لیست پوسترهای شهید بازیابی شد.", Data = posters, StatusCode = 200 });
         }
+
 
         // GET: api/Posters/Shahid/{id}/file
         [HttpGet("Shahid/{id}/file")]

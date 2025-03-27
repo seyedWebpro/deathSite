@@ -10,9 +10,11 @@ namespace deathSite.View.PaymentParsian
         public long Amount { get; set; }
         // public long OrderId { get; set; }
         public string Description { get; set; }
+        
 
         // فیلدهای اضافی برای منطق داخلی (برای ثبت پکیج)
         public int? UserId { get; set; }
+        public int? DeceasedId { get; set; }
         public int? PackageId { get; set; }
     }
 }

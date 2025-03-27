@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using deathSite.Model;
 
 namespace api.Model
 {
@@ -39,8 +40,18 @@ namespace api.Model
         public int UserId { get; set; }
         public User User { get; set; }
 
+        // وضعیت تایید شدن (توسط ادمین)
+        public string Approved { get; set; } = "Pending"; // مقدار پیش‌فرض: Pending
+        public string? RejectionReason { get; set; } // دلیل رد شدن (در صورت وجود)
+
+
         // رابطه Many-to-Many
         public List<ShahidTag> ShahidTags { get; set; } = new List<ShahidTag>();
+
+        public ICollection<ShahidViewCount> ShahidViews { get; set; } = new List<ShahidViewCount>();
+
+         // رابطه یک به چند با درخواست‌های به‌روزرسانی (اختیاری)
+    public ICollection<ShahidUpdateRequest> UpdateRequests { get; set; } = new List<ShahidUpdateRequest>();
     }
 
 

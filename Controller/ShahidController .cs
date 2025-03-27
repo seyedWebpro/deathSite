@@ -9,6 +9,8 @@ using api.Context;
 using api.Middleware;
 using api.Model;
 using api.Services;
+using deathSite.Model;
+using deathSite.View.ShahidManagement;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -33,43 +35,45 @@ namespace api.Controller
             _configuration = configuration;
         }
 
-
+        // اضافه کردن تایید ادمین برای نقش کاربر
 
         [HttpPost("create")]
         public async Task<IActionResult> Create([FromBody] ShahidView shahidView)
         {
             if (!ModelState.IsValid)
             {
+                _logger.LogWarning("Validation failed for ShahidView model.");
                 return BadRequest(new { StatusCode = 400, Message = "خطا در اعتبارسنجی داده‌ها." });
             }
 
-            // استخراج توکن از هدر Authorization
             var token = Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
-
             if (string.IsNullOrEmpty(token))
             {
+                _logger.LogWarning("Authorization token is missing.");
                 return Unauthorized(new { StatusCode = 401, Message = "توکن معتبر نیست." });
             }
 
             try
             {
-                // تجزیه توکن و استخراج اطلاعات کاربر
                 var handler = new JwtSecurityTokenHandler();
                 var jwtToken = handler.ReadJwtToken(token);
 
-                // استخراج اطلاعات کاربر از توکن
                 var userIdClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == "UserId")?.Value;
                 var roleClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == "role")?.Value;
 
                 if (userIdClaim == null || roleClaim == null)
                 {
+                    _logger.LogWarning("Token claims are missing: UserId={UserIdClaim}, Role={RoleClaim}", userIdClaim, roleClaim);
                     return Unauthorized(new { StatusCode = 401, Message = "توکن معتبر نیست." });
                 }
 
                 var userId = int.Parse(userIdClaim);
                 var role = roleClaim;
 
-                // ایجاد رکورد شهید و ارتباط آن با کاربر
+                _logger.LogInformation("Authenticated User: {UserId}, Role: {Role}", userId, role);
+
+                string Approved = role == "Admin" ? "Approved" : "Pending";
+
                 var shahid = new Shahid
                 {
                     FullName = shahidView.FullName,
@@ -95,284 +99,196 @@ namespace api.Controller
                     Ghesmat = shahidView.Ghesmat,
                     PoemVerseOne = shahidView.PoemVerseOne,
                     PoemVerseTwo = shahidView.PoemVerseTwo,
-                    UserId = userId // استفاده از userId استخراج شده از توکن
+                    UserId = userId,
+                    Approved = Approved
                 };
 
                 await _context.shahids.AddAsync(shahid);
                 await _context.SaveChangesAsync();
 
-                // بازگشت داده‌های شهید به همراه اطلاعات کاربر (UserId و role)
+                _logger.LogInformation("Shahid record created successfully: Id={ShahidId}, Approved={Approved}", shahid.Id, Approved);
+
                 var result = new
                 {
                     StatusCode = 200,
-                    Message = "شهید با موفقیت ایجاد شد.",
-                    Data = new
-                    {
-                        id = shahid.Id,
-                        UserId = shahid.UserId,  // بازگرداندن UserId
-                        Role = role  // بازگرداندن role
-                    }
+                    Message = Approved == "Approved" ? "شهید با موفقیت ایجاد شد." : "ثبت شهید با موفقیت انجام شد و در انتظار تایید ادمین است.",
+                    Data = new { id = shahid.Id, UserId = shahid.UserId, Role = role }
                 };
 
                 return Ok(result);
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Error occurred while processing token.");
                 return Unauthorized(new { StatusCode = 401, Message = "توکن معتبر نیست." });
             }
         }
 
-        [HttpGet("all")]
-        public async Task<IActionResult> GetAll()
+
+[HttpGet("all")]
+public async Task<IActionResult> GetAll()
+{
+    var shahids = await _context.shahids
+        .Select(shahid => new
         {
-            var shahids = await _context.shahids
-                .Select(shahid => new
-                {
-                    Id = shahid.Id,
-                    FullName = shahid.FullName,
-                    FatherName = shahid.FatherName,
-                    BirthBorn = shahid.BirthBorn,
-                    BirthDead = shahid.BirthDead,
-                    PlaceDead = shahid.PlaceDead,
-                    PlaceOfBurial = shahid.PlaceOfBurial,
-                    BurialSiteLink = shahid.BurialSiteLink,
-                    MediaLink = shahid.MediaLink,
-                    DeadPlaceLink = shahid.DeadPlaceLink,
-                    virtualLink = shahid.virtualLink,
-                    Responsibilities = shahid.Responsibilities,
-                    Operations = shahid.Operations,
-                    Biography = shahid.Biography,
-                    Will = shahid.Will,
-                    Memories = shahid.Memories,
-                    PhotoUrls = shahid.PhotoUrls,
-                    VideoUrls = shahid.VideoUrls,
-                    VoiceUrls = shahid.VoiceUrls,
-                    CauseOfMartyrdom = shahid.CauseOfMartyrdom,
-                    LastResponsibility = shahid.LastResponsibility,
-                    Gorooh = shahid.Gorooh,
-                    Yegan = shahid.Yegan,
-                    Niru = shahid.Niru,
-                    Ghesmat = shahid.Ghesmat,
-                    PoemVerseOne = shahid.PoemVerseOne,
-                    PoemVerseTwo = shahid.PoemVerseTwo
-                })
-                .ToListAsync();
+            Id = shahid.Id,
+            FullName = shahid.FullName,
+            FatherName = shahid.FatherName,
+            BirthBorn = shahid.BirthBorn,
+            BirthDead = shahid.BirthDead,
+            PlaceDead = shahid.PlaceDead,
+            PlaceOfBurial = shahid.PlaceOfBurial,
+            BurialSiteLink = shahid.BurialSiteLink,
+            MediaLink = shahid.MediaLink,
+            DeadPlaceLink = shahid.DeadPlaceLink,
+            virtualLink = shahid.virtualLink,
+            Responsibilities = shahid.Responsibilities,
+            Operations = shahid.Operations,
+            Biography = shahid.Biography,
+            Will = shahid.Will,
+            Memories = shahid.Memories,
+            PhotoUrls = shahid.PhotoUrls,
+            VideoUrls = shahid.VideoUrls,
+            VoiceUrls = shahid.VoiceUrls,
+            CauseOfMartyrdom = shahid.CauseOfMartyrdom,
+            LastResponsibility = shahid.LastResponsibility,
+            Gorooh = shahid.Gorooh,
+            Yegan = shahid.Yegan,
+            Niru = shahid.Niru,
+            Ghesmat = shahid.Ghesmat,
+            PoemVerseOne = shahid.PoemVerseOne,
+            PoemVerseTwo = shahid.PoemVerseTwo,
+            Approved = shahid.Approved,
+            ViewCount = _context.ShahidViewCounts.Count(vc => vc.ShahidId == shahid.Id) // تعداد ویوها برای هر شهید
+        })
+        .ToListAsync();
 
-            if (!shahids.Any())
-            {
-                return NotFound(new { StatusCode = 404, Message = "هیچ شهیدی پیدا نشد." });
-            }
+    if (!shahids.Any())
+    {
+        return NotFound(new { StatusCode = 404, Message = "هیچ شهیدی پیدا نشد." });
+    }
 
-            return Ok(new
-            {
-                StatusCode = 200,
-                Data = shahids
-            });
-        }
+    return Ok(new
+    {
+        StatusCode = 200,
+        Data = shahids
+    });
+}
 
-        [HttpGet("{id}/user")]
-        public async Task<IActionResult> GetByIdForUser(int id)
+[HttpGet("{id}/user")]
+public async Task<IActionResult> GetByIdForUser(int id)
+{
+    try
+    {
+        var shahid = await _context.shahids.FindAsync(id);
+        if (shahid == null)
         {
-            // استخراج توکن از هدر Authorization
-            var token = Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
-
-            if (string.IsNullOrEmpty(token))
-            {
-                return Unauthorized(new { StatusCode = 401, Message = "توکن معتبر نیست." });
-            }
-
-            try
-            {
-                // تجزیه توکن و استخراج اطلاعات کاربر
-                var handler = new JwtSecurityTokenHandler();
-                var jwtToken = handler.ReadJwtToken(token);
-
-                // استخراج UserId از توکن
-                var userIdClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == "UserId")?.Value;
-                var userId = int.Parse(userIdClaim);
-
-                // پیدا کردن شهید با Id مربوطه
-                var shahid = await _context.shahids.FindAsync(id);
-                if (shahid == null)
-                {
-                    return NotFound(new { StatusCode = 404, Message = "شهید پیدا نشد." });
-                }
-
-                // بررسی اینکه آیا شهید متعلق به کاربر جاری است
-                if (shahid.UserId != userId)
-                {
-                    return Unauthorized(new { StatusCode = 401, Message = "شما اجازه دسترسی به این شهید را ندارید." });
-                }
-
-                var result = new
-                {
-                    Id = shahid.Id,
-                    FullName = shahid.FullName,
-                    FatherName = shahid.FatherName,
-                    BirthBorn = shahid.BirthBorn,
-                    BirthDead = shahid.BirthDead,
-                    PlaceDead = shahid.PlaceDead,
-                    PlaceOfBurial = shahid.PlaceOfBurial,
-                    BurialSiteLink = shahid.BurialSiteLink,
-                    MediaLink = shahid.MediaLink,
-                    DeadPlaceLink = shahid.DeadPlaceLink,
-                    virtualLink = shahid.virtualLink,
-                    Responsibilities = shahid.Responsibilities,
-                    Operations = shahid.Operations,
-                    Biography = shahid.Biography,
-                    Will = shahid.Will,
-                    Memories = shahid.Memories,
-                    PhotoUrls = shahid.PhotoUrls,
-                    VideoUrls = shahid.VideoUrls,
-                    VoiceUrls = shahid.VoiceUrls,
-                    CauseOfMartyrdom = shahid.CauseOfMartyrdom,
-                    LastResponsibility = shahid.LastResponsibility,
-                    Gorooh = shahid.Gorooh,
-                    Yegan = shahid.Yegan,
-                    Niru = shahid.Niru,
-                    Ghesmat = shahid.Ghesmat,
-                    PoemVerseOne = shahid.PoemVerseOne,
-                    PoemVerseTwo = shahid.PoemVerseTwo
-                };
-
-                return Ok(new
-                {
-                    StatusCode = 200,
-                    Data = result
-                });
-            }
-            catch (Exception)
-            {
-                return Unauthorized(new { StatusCode = 401, Message = "توکن معتبر نیست." });
-            }
+            return NotFound(new { StatusCode = 404, Message = "شهید پیدا نشد." });
         }
 
-        [HttpGet("user/{userId}")]
-        public async Task<IActionResult> GetAllByUser(int userId)
+        var result = new
         {
-            // استخراج توکن از هدر Authorization
-            var token = Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+            Id = shahid.Id,
+            FullName = shahid.FullName,
+            FatherName = shahid.FatherName,
+            BirthBorn = shahid.BirthBorn,
+            BirthDead = shahid.BirthDead,
+            PlaceDead = shahid.PlaceDead,
+            PlaceOfBurial = shahid.PlaceOfBurial,
+            BurialSiteLink = shahid.BurialSiteLink,
+            MediaLink = shahid.MediaLink,
+            DeadPlaceLink = shahid.DeadPlaceLink,
+            virtualLink = shahid.virtualLink,
+            Responsibilities = shahid.Responsibilities,
+            Operations = shahid.Operations,
+            Biography = shahid.Biography,
+            Will = shahid.Will,
+            Memories = shahid.Memories,
+            PhotoUrls = shahid.PhotoUrls,
+            VideoUrls = shahid.VideoUrls,
+            VoiceUrls = shahid.VoiceUrls,
+            CauseOfMartyrdom = shahid.CauseOfMartyrdom,
+            LastResponsibility = shahid.LastResponsibility,
+            Gorooh = shahid.Gorooh,
+            Yegan = shahid.Yegan,
+            Niru = shahid.Niru,
+            Ghesmat = shahid.Ghesmat,
+            PoemVerseOne = shahid.PoemVerseOne,
+            PoemVerseTwo = shahid.PoemVerseTwo,
+            Approved = shahid.Approved,
+            ViewCount = _context.ShahidViewCounts.Count(vc => vc.ShahidId == shahid.Id) // تعداد ویوها برای شهید خاص
+        };
 
-            if (string.IsNullOrEmpty(token))
+        return Ok(new
+        {
+            StatusCode = 200,
+            Data = result
+        });
+    }
+    catch (Exception)
+    {
+        return BadRequest(new { StatusCode = 400, Message = "خطا در بازیابی اطلاعات." });
+    }
+}
+
+[HttpGet("user/{userId}")]
+public async Task<IActionResult> GetAllByUser(int userId)
+{
+    try
+    {
+        var shahids = await _context.shahids
+            .Where(s => s.UserId == userId)
+            .Select(shahid => new
             {
-                return Unauthorized(new { StatusCode = 401, Message = "توکن معتبر نیست." });
-            }
+                Id = shahid.Id,
+                FullName = shahid.FullName,
+                FatherName = shahid.FatherName,
+                BirthBorn = shahid.BirthBorn,
+                BirthDead = shahid.BirthDead,
+                PlaceDead = shahid.PlaceDead,
+                PlaceOfBurial = shahid.PlaceOfBurial,
+                BurialSiteLink = shahid.BurialSiteLink,
+                MediaLink = shahid.MediaLink,
+                DeadPlaceLink = shahid.DeadPlaceLink,
+                virtualLink = shahid.virtualLink,
+                Responsibilities = shahid.Responsibilities,
+                Operations = shahid.Operations,
+                Biography = shahid.Biography,
+                Will = shahid.Will,
+                Memories = shahid.Memories,
+                PhotoUrls = shahid.PhotoUrls,
+                VideoUrls = shahid.VideoUrls,
+                VoiceUrls = shahid.VoiceUrls,
+                CauseOfMartyrdom = shahid.CauseOfMartyrdom,
+                LastResponsibility = shahid.LastResponsibility,
+                Gorooh = shahid.Gorooh,
+                Yegan = shahid.Yegan,
+                Niru = shahid.Niru,
+                Ghesmat = shahid.Ghesmat,
+                PoemVerseOne = shahid.PoemVerseOne,
+                PoemVerseTwo = shahid.PoemVerseTwo,
+                Approved = shahid.Approved,
+                ViewCount = _context.ShahidViewCounts.Count(vc => vc.ShahidId == shahid.Id) // تعداد ویوها برای هر شهید
+            })
+            .ToListAsync();
 
-            try
-            {
-                // تجزیه توکن و استخراج اطلاعات کاربر
-                var handler = new JwtSecurityTokenHandler();
-                var jwtToken = handler.ReadJwtToken(token);
-
-                // استخراج UserId از توکن
-                var userIdClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == "UserId")?.Value;
-                var extractedUserId = int.Parse(userIdClaim);
-
-                // بررسی اینکه آیا UserId از توکن با userId که به عنوان پارامتر آمده یکسان است
-                if (userId != extractedUserId)
-                {
-                    return Unauthorized(new { StatusCode = 401, Message = "شما اجازه دسترسی به این اطلاعات را ندارید." });
-                }
-
-                var shahids = await _context.shahids
-                    .Where(s => s.UserId == userId)
-                    .Select(shahid => new
-                    {
-                        Id = shahid.Id,
-                        FullName = shahid.FullName,
-                        FatherName = shahid.FatherName,
-                        BirthBorn = shahid.BirthBorn,
-                        BirthDead = shahid.BirthDead,
-                        PlaceDead = shahid.PlaceDead,
-                        PlaceOfBurial = shahid.PlaceOfBurial,
-                        BurialSiteLink = shahid.BurialSiteLink,
-                        MediaLink = shahid.MediaLink,
-                        DeadPlaceLink = shahid.DeadPlaceLink,
-                        virtualLink = shahid.virtualLink,
-                        Responsibilities = shahid.Responsibilities,
-                        Operations = shahid.Operations,
-                        Biography = shahid.Biography,
-                        Will = shahid.Will,
-                        Memories = shahid.Memories,
-                        PhotoUrls = shahid.PhotoUrls,
-                        VideoUrls = shahid.VideoUrls,
-                        VoiceUrls = shahid.VoiceUrls,
-                        CauseOfMartyrdom = shahid.CauseOfMartyrdom,
-                        LastResponsibility = shahid.LastResponsibility,
-                        Gorooh = shahid.Gorooh,
-                        Yegan = shahid.Yegan,
-                        Niru = shahid.Niru,
-                        Ghesmat = shahid.Ghesmat,
-                        PoemVerseOne = shahid.PoemVerseOne,
-                        PoemVerseTwo = shahid.PoemVerseTwo
-                    })
-                    .ToListAsync();
-
-                if (!shahids.Any())
-                {
-                    return NotFound(new { StatusCode = 404, Message = "هیچ شهیدی برای این کاربر پیدا نشد." });
-                }
-
-                return Ok(new
-                {
-                    StatusCode = 200,
-                    Data = shahids
-                });
-            }
-            catch (Exception)
-            {
-                return Unauthorized(new { StatusCode = 401, Message = "توکن معتبر نیست." });
-            }
+        if (!shahids.Any())
+        {
+            return NotFound(new { StatusCode = 404, Message = "هیچ شهیدی برای این کاربر پیدا نشد." });
         }
 
+        return Ok(new
+        {
+            StatusCode = 200,
+            Data = shahids
+        });
+    }
+    catch (Exception)
+    {
+        return BadRequest(new { StatusCode = 400, Message = "خطا در بازیابی اطلاعات." });
+    }
+}
 
-
-        // [HttpGet("{id}")]
-        // public async Task<IActionResult> GetById(int id)
-        // {
-        //     var shahid = await _context.shahids.FindAsync(id);
-        //     if (shahid == null)
-        //     {
-        //         return NotFound(new { StatusCode = 404, Message = "شهید پیدا نشد." });
-        //     }
-
-        //     var result = new
-        //     {
-        //         Id = shahid.Id,
-        //         FullName = shahid.FullName,
-        //         FatherName = shahid.FatherName,
-        //         BirthBorn = shahid.BirthBorn,
-        //         BirthDead = shahid.BirthDead,
-        //         PlaceDead = shahid.PlaceDead,
-        //         PlaceOfBurial = shahid.PlaceOfBurial,
-        //         BurialSiteLink = shahid.BurialSiteLink,
-        //         MediaLink = shahid.MediaLink,
-        //         DeadPlaceLink = shahid.DeadPlaceLink,
-        //         virtualLink = shahid.virtualLink,
-        //         Responsibilities = shahid.Responsibilities,
-        //         Operations = shahid.Operations,
-        //         Biography = shahid.Biography,
-        //         Will = shahid.Will,
-        //         Memories = shahid.Memories,
-        //         PhotoUrls = shahid.PhotoUrls,
-        //         VideoUrls = shahid.VideoUrls,
-        //         VoiceUrls = shahid.VoiceUrls,
-        //         CauseOfMartyrdom = shahid.CauseOfMartyrdom,
-        //         LastResponsibility = shahid.LastResponsibility,
-        //         Gorooh = shahid.Gorooh,
-        //         Yegan = shahid.Yegan,
-        //         Niru = shahid.Niru,
-        //         Ghesmat = shahid.Ghesmat,
-        //         PoemVerseOne = shahid.PoemVerseOne,
-        //         PoemVerseTwo = shahid.PoemVerseTwo
-        //     };
-
-        //     return Ok(new
-        //     {
-        //         StatusCode = 200,
-        //         Data = result
-        //     });
-        // }
 
         [HttpPost("{id}/upload-files")]
         public async Task<IActionResult> UploadFiles(int id, List<IFormFile> files)
@@ -595,6 +511,295 @@ namespace api.Controller
                 return StatusCode(500, "خطای سروری داخلی");
             }
         }
+
+        [HttpPost("approve/{shahidId}")]
+        public async Task<IActionResult> ApproveShahid(int shahidId)
+        {
+            var shahid = await _context.shahids.FindAsync(shahidId);
+            if (shahid == null)
+            {
+                return NotFound(new { StatusCode = 404, Message = "رکورد مورد نظر یافت نشد." });
+            }
+
+            shahid.Approved = "Approved"; // مقدار جدید
+
+            await _context.SaveChangesAsync();
+
+            return Ok(new { StatusCode = 200, Message = "شهید با موفقیت تایید شد." });
+        }
+
+        [HttpPost("reject/{shahidId}")]
+        public async Task<IActionResult> RejectShahid(int shahidId, [FromBody] RejectShahidDto rejectDto)
+        {
+            var shahid = await _context.shahids.FindAsync(shahidId);
+            if (shahid == null)
+            {
+                return NotFound(new { StatusCode = 404, Message = "رکورد مورد نظر یافت نشد." });
+            }
+
+            shahid.Approved = "Rejected";
+            shahid.RejectionReason = rejectDto.Reason; // ذخیره دلیل رد شدن
+
+            await _context.SaveChangesAsync();
+
+            return Ok(new { StatusCode = 200, Message = "شهید با موفقیت رد شد.", Reason = rejectDto.Reason });
+        }
+
+        [HttpGet("rejected")]
+        public async Task<IActionResult> GetRejectedShahids()
+        {
+            var shahids = await _context.shahids
+                .Where(s => s.Approved == "Rejected")
+                .ToListAsync();
+
+            var result = shahids.Select(s => new
+            {
+                s.Id,
+                s.FullName,
+                s.FatherName,
+                s.BirthBorn,
+                s.BirthDead,
+                s.PlaceDead,
+                s.PlaceOfBurial,
+                s.BurialSiteLink,
+                s.MediaLink,
+                s.DeadPlaceLink,
+                s.virtualLink,
+                s.Responsibilities,
+                s.Operations,
+                s.Biography,
+                s.Will,
+                s.Memories,
+                s.CauseOfMartyrdom,
+                s.LastResponsibility,
+                s.Gorooh,
+                s.Yegan,
+                s.Niru,
+                s.Ghesmat,
+                s.PoemVerseOne,
+                s.PoemVerseTwo,
+                s.UserId,
+                s.Approved,
+                RejectionReason = s.RejectionReason // اضافه کردن دلیل رد شدن
+            }).ToList();
+
+            return Ok(new { StatusCode = 200, Data = result });
+        }
+
+
+
+        [HttpGet("approved")]
+        public async Task<IActionResult> GetApprovedShahids()
+        {
+            var shahids = await _context.shahids.Where(s => s.Approved == "Approved").ToListAsync();
+
+            var result = shahids.Select(s => new
+            {
+                s.Id,
+                s.FullName,
+                s.FatherName,
+                s.BirthBorn,
+                s.BirthDead,
+                s.PlaceDead,
+                s.PlaceOfBurial,
+                s.BurialSiteLink,
+                s.MediaLink,
+                s.DeadPlaceLink,
+                s.virtualLink,
+                s.Responsibilities,
+                s.Operations,
+                s.Biography,
+                s.Will,
+                s.Memories,
+                s.CauseOfMartyrdom,
+                s.LastResponsibility,
+                s.Gorooh,
+                s.Yegan,
+                s.Niru,
+                s.Ghesmat,
+                s.PoemVerseOne,
+                s.PoemVerseTwo,
+                s.UserId,
+                s.Approved
+            }).ToList();
+
+            return Ok(new { StatusCode = 200, Data = result });
+        }
+
+
+
+        [HttpGet("pending")]
+        public async Task<IActionResult> GetPendingShahids()
+        {
+            var shahids = await _context.shahids.Where(s => s.Approved == "Pending").ToListAsync();
+
+            var result = shahids.Select(s => new
+            {
+                s.Id,
+                s.FullName,
+                s.FatherName,
+                s.BirthBorn,
+                s.BirthDead,
+                s.PlaceDead,
+                s.PlaceOfBurial,
+                s.BurialSiteLink,
+                s.MediaLink,
+                s.DeadPlaceLink,
+                s.virtualLink,
+                s.Responsibilities,
+                s.Operations,
+                s.Biography,
+                s.Will,
+                s.Memories,
+                s.CauseOfMartyrdom,
+                s.LastResponsibility,
+                s.Gorooh,
+                s.Yegan,
+                s.Niru,
+                s.Ghesmat,
+                s.PoemVerseOne,
+                s.PoemVerseTwo,
+                s.UserId,
+                s.Approved
+            }).ToList();
+
+            return Ok(new { StatusCode = 200, Data = result });
+        }
+
+        [HttpGet("status/{shahidId}")]
+        public async Task<IActionResult> GetShahidStatus(int shahidId)
+        {
+            var shahid = await _context.shahids
+                .Where(s => s.Id == shahidId)
+                .Select(s => new
+                {
+                    s.Id,
+                    s.FullName,
+                    s.Approved, // وضعیت شهید: Approved, Rejected, Pending
+                    RejectionReason = s.Approved == "Rejected" ? s.RejectionReason : null
+                })
+                .FirstOrDefaultAsync();
+
+            if (shahid == null)
+            {
+                return NotFound(new { StatusCode = 404, Message = "شهید مورد نظر یافت نشد." });
+            }
+
+            return Ok(new { StatusCode = 200, Data = shahid });
+        }
+
+        [HttpPut("edit/{shahidId}")]
+        public async Task<IActionResult> EditShahid(int shahidId, [FromBody] ShahidView shahidView)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(new { StatusCode = 400, Message = "خطا در اعتبارسنجی داده‌ها." });
+            }
+
+            var token = Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+            if (string.IsNullOrEmpty(token))
+            {
+                return Unauthorized(new { StatusCode = 401, Message = "توکن معتبر نیست." });
+            }
+
+            try
+            {
+                var handler = new JwtSecurityTokenHandler();
+                var jwtToken = handler.ReadJwtToken(token);
+
+                var userIdClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == "UserId")?.Value;
+                var roleClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == "role")?.Value;
+
+                if (userIdClaim == null || roleClaim == null)
+                {
+                    return Unauthorized(new { StatusCode = 401, Message = "توکن معتبر نیست." });
+                }
+
+                var userId = int.Parse(userIdClaim);
+                var role = roleClaim;
+
+                var shahid = await _context.shahids.FindAsync(shahidId);
+                if (shahid == null)
+                {
+                    return NotFound(new { StatusCode = 404, Message = "رکورد مورد نظر یافت نشد." });
+                }
+
+                // بررسی اینکه فقط کاربر صاحب اطلاعات یا ادمین اجازه ویرایش داشته باشد
+                if (shahid.UserId != userId && role != "Admin")
+                {
+                    return Forbid();
+                }
+
+                // تعیین وضعیت جدید تأیید
+                string newApprovedStatus = shahid.Approved == "Approved" || shahid.Approved == "Rejected"
+                    ? "Pending"
+                    : shahid.Approved;
+
+                // بروزرسانی اطلاعات
+                shahid.FullName = shahidView.FullName;
+                shahid.FatherName = shahidView.FatherName;
+                shahid.BirthBorn = shahidView.BirthBorn;
+                shahid.BirthDead = shahidView.BirthDead;
+                shahid.PlaceDead = shahidView.PlaceDead;
+                shahid.PlaceOfBurial = shahidView.PlaceOfBurial;
+                shahid.BurialSiteLink = shahidView.BurialSiteLink;
+                shahid.MediaLink = shahidView.MediaLink;
+                shahid.DeadPlaceLink = shahidView.DeadPlaceLink;
+                shahid.virtualLink = shahidView.virtualLink;
+                shahid.Responsibilities = shahidView.Responsibilities;
+                shahid.Operations = shahidView.Operations;
+                shahid.Biography = shahidView.Biography;
+                shahid.Will = shahidView.Will;
+                shahid.Memories = shahidView.Memories;
+                shahid.CauseOfMartyrdom = shahidView.CauseOfMartyrdom;
+                shahid.LastResponsibility = shahidView.LastResponsibility;
+                shahid.Gorooh = shahidView.Gorooh;
+                shahid.Yegan = shahidView.Yegan;
+                shahid.Niru = shahidView.Niru;
+                shahid.Ghesmat = shahidView.Ghesmat;
+                shahid.PoemVerseOne = shahidView.PoemVerseOne;
+                shahid.PoemVerseTwo = shahidView.PoemVerseTwo;
+                shahid.PhotoUrls = shahidView.PhotoUrls;
+                shahid.VideoUrls = shahidView.VideoUrls;
+                shahid.VoiceUrls = shahidView.VoiceUrls;
+
+                if (role != "Admin")
+                {
+                    // اگر کاربر عادی ویرایش کند و شهید تأیید شده یا رد شده باشد، وضعیت را به "Pending" تغییر دهیم
+                    shahid.Approved = newApprovedStatus;
+                }
+                else
+                {
+                    // اگر ادمین ویرایش کند، وضعیت را مستقیماً "Approved" قرار دهیم
+                    shahid.Approved = "Approved";
+                    shahid.RejectionReason = null; // دلیل رد قبلی را پاک می‌کنیم
+                }
+
+                await _context.SaveChangesAsync();
+
+                var result = new
+                {
+                    StatusCode = 200,
+                    Message = shahid.Approved == "Approved"
+                        ? "ویرایش اطلاعات شهید با موفقیت انجام شد."
+                        : "ویرایش انجام شد و در انتظار تأیید ادمین است.",
+                    Data = new
+                    {
+                        id = shahid.Id,
+                        UserId = shahid.UserId,
+                        Approved = shahid.Approved
+                    }
+                };
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return Unauthorized(new { StatusCode = 401, Message = "توکن معتبر نیست." });
+            }
+        }
+
+
 
     }
 }

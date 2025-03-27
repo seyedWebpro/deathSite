@@ -13,9 +13,9 @@ namespace api.Controller.Admin
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class packagesController  : ControllerBase
+    public class packagesController : ControllerBase
     {
-         private readonly apiContext _context;
+        private readonly apiContext _context;
 
         public packagesController(apiContext context)
         {
@@ -51,7 +51,10 @@ namespace api.Controller.Admin
                 LocationAndNavigationEnabled = packageDto.LocationAndNavigationEnabled,
                 SharingEnabled = packageDto.SharingEnabled,
                 File360DegreeEnabled = packageDto.File360DegreeEnabled,
-                UpdateCapabilityEnabled = packageDto.UpdateCapabilityEnabled
+                UpdateCapabilityEnabled = packageDto.UpdateCapabilityEnabled,
+
+                // استفاده از ویژگی رایگان بودن
+                IsFreePackage = packageDto.IsFreePackage
             };
 
             _context.packages.Add(package);
@@ -59,6 +62,7 @@ namespace api.Controller.Admin
 
             return Ok(new { StatusCode = 201, Message = "پکیج با موفقیت ایجاد شد.", Data = package });
         }
+
 
         // متد برای ویرایش پکیج
         [HttpPut("{id}")]
@@ -94,6 +98,7 @@ namespace api.Controller.Admin
             package.SharingEnabled = packageDto.SharingEnabled;
             package.File360DegreeEnabled = packageDto.File360DegreeEnabled;
             package.UpdateCapabilityEnabled = packageDto.UpdateCapabilityEnabled;
+            package.IsFreePackage = packageDto.IsFreePackage;
 
             _context.packages.Update(package);
             await _context.SaveChangesAsync();
@@ -115,7 +120,7 @@ namespace api.Controller.Admin
             await _context.SaveChangesAsync();
 
             return NoContent(); // 204 No Content
-        }   
+        }
 
         // متد برای دریافت پکیج بر اساس شناسه
         [HttpGet("{id}")]

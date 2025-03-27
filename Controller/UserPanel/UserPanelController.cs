@@ -1,5 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.IdentityModel.Claims;
+using System.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Threading.Tasks;
 using api.Context;
@@ -17,74 +20,268 @@ namespace api.Controller.UserPanel
     {
         private readonly apiContext _context;
         private readonly ICalculatorService _calculatorService;
+ private readonly ILogger<UserPanelController> _logger;
 
-
-        public UserPanelController(apiContext context, ICalculatorService calculatorService)
+        public UserPanelController(apiContext context, ICalculatorService calculatorService ,  ILogger<UserPanelController> logger)
         {
             _context = context;
             _calculatorService = calculatorService;
-
+            _logger = logger;
         }
 
-        [HttpPut("update/{id}")]
-public async Task<IActionResult> UpdateUser(int id, [FromBody] UpdateUserPanelDto model)
+//   [HttpPut("update")]
+// public async Task<IActionResult> UpdateUser([FromBody] UpdateUserPanelDto model)
+// {
+//     var token = Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+
+//     if (string.IsNullOrEmpty(token))
+//     {
+//         return Unauthorized(new { StatusCode = 401, Message = "توکن ارسال نشده است. لطفاً وارد حساب خود شوید." });
+//     }
+
+//     try
+//     {
+//         var handler = new JwtSecurityTokenHandler();
+//         var jwtToken = handler.ReadJwtToken(token);
+
+//         var userIdClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == "UserId")?.Value;
+//         if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int userId))
+//         {
+//             return Unauthorized(new { StatusCode = 401, Message = "توکن نامعتبر است. لطفاً دوباره وارد شوید." });
+//         }
+
+//         var user = await _context.users.FindAsync(userId);
+//         if (user == null)
+//         {
+//             return NotFound(new { StatusCode = 404, Message = "کاربر یافت نشد." });
+//         }
+
+//  // به‌روزرسانی اطلاعات کاربر
+//     user.firstName = string.IsNullOrWhiteSpace(model.FirstName) ? user.firstName : model.FirstName;
+//     user.lastName = string.IsNullOrWhiteSpace(model.LastName) ? user.lastName : model.LastName;
+//     user.phoneNumber = string.IsNullOrWhiteSpace(model.PhoneNumber) ? user.phoneNumber : model.PhoneNumber;
+
+//     _context.users.Update(user);
+//     await _context.SaveChangesAsync();
+
+//         return Ok(new { StatusCode = 200, Message = "اطلاعات کاربر با موفقیت به‌روزرسانی شد." });
+//     }
+//     catch (SecurityTokenException)
+//     {
+//         return Unauthorized(new { StatusCode = 401, Message = "توکن منقضی شده یا نامعتبر است. لطفاً دوباره وارد شوید." });
+//     }
+//     catch
+//     {
+//         return StatusCode(500, new { StatusCode = 500, Message = "خطای داخلی سرور. لطفاً بعداً دوباره تلاش کنید." });
+//     }
+// }
+
+// انقضای توکن قبلی و ساخت توکن جدید
+
+[HttpPut("update")]
+public async Task<IActionResult> UpdateUser([FromBody] UpdateUserPanelDto model)
 {
-    if (!ModelState.IsValid)
+    // دریافت توکن از هدر درخواست
+    var token = Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+
+    if (string.IsNullOrEmpty(token))
     {
-        return BadRequest(new { StatusCode = 400, Message = "خطا در اعتبارسنجی داده‌ها.", Errors = ModelState });
+        return Unauthorized(new { StatusCode = 401, Message = "توکن ارسال نشده است. لطفاً وارد حساب خود شوید." });
     }
 
-    var user = await _context.users.FindAsync(id);
-    if (user == null)
+    try
     {
-        return NotFound(new { StatusCode = 404, Message = "کاربر یافت نشد." });
+        var handler = new JwtSecurityTokenHandler();
+        var jwtToken = handler.ReadJwtToken(token);
+
+        var userIdClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == "UserId")?.Value;
+        if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int userId))
+        {
+            return Unauthorized(new { StatusCode = 401, Message = "توکن نامعتبر است. لطفاً دوباره وارد شوید." });
+        }
+
+        var user = await _context.users.FindAsync(userId);
+        if (user == null)
+        {
+            return NotFound(new { StatusCode = 404, Message = "کاربر یافت نشد." });
+        }
+
+        // منقضی کردن توکن جاری در دیتابیس
+        var storedToken = await _context.userTokens.FirstOrDefaultAsync(ut => ut.Token == token && !ut.IsExpired);
+        if (storedToken != null)
+        {
+            storedToken.IsExpired = true;
+            _context.userTokens.Update(storedToken);
+            await _context.SaveChangesAsync();
+        }
+
+        // به‌روزرسانی اطلاعات کاربر
+        user.firstName = string.IsNullOrWhiteSpace(model.FirstName) ? user.firstName : model.FirstName;
+        user.lastName = string.IsNullOrWhiteSpace(model.LastName) ? user.lastName : model.LastName;
+        user.phoneNumber = string.IsNullOrWhiteSpace(model.PhoneNumber) ? user.phoneNumber : model.PhoneNumber;
+
+        _context.users.Update(user);
+        await _context.SaveChangesAsync();
+
+        // صدور توکن جدید با اطلاعات به‌روز
+        var newToken = _calculatorService.GenerateJwtToken(user);
+
+        return Ok(new 
+        { 
+            StatusCode = 200, 
+            Message = "اطلاعات کاربر با موفقیت به‌روزرسانی شد.",
+            Token = newToken 
+        });
     }
-
-    // به‌روزرسانی نام و نام خانوادگی
-    user.firstName = string.IsNullOrWhiteSpace(model.FirstName) ? user.firstName : model.FirstName;
-    user.lastName = string.IsNullOrWhiteSpace(model.LastName) ? user.lastName : model.LastName;
-
-    // شماره تلفن را اگر تغییر کرده باشد به‌روز می‌کنیم
-    user.phoneNumber = string.IsNullOrWhiteSpace(model.PhoneNumber) ? user.phoneNumber : model.PhoneNumber;
-
-    _context.users.Update(user);
-    await _context.SaveChangesAsync();
-
-    return Ok(new { StatusCode = 200, Message = "اطلاعات کاربر با موفقیت به‌روز شد." });
+    catch (SecurityTokenException)
+    {
+        return Unauthorized(new { StatusCode = 401, Message = "توکن منقضی شده یا نامعتبر است. لطفاً دوباره وارد شوید." });
+    }
+    catch
+    {
+        return StatusCode(500, new { StatusCode = 500, Message = "خطای داخلی سرور. لطفاً بعداً دوباره تلاش کنید." });
+    }
 }
 
 
-        [HttpPut("change-password/{id}")]
-        public async Task<IActionResult> ChangePassword(int id, [FromBody] ChangePasswordDto model)
+
+//        [HttpPut("change-password")]
+// public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDto model)
+// {
+//     if (!ModelState.IsValid)
+//     {
+//         return BadRequest(new { StatusCode = 400, Message = "خطا در اعتبارسنجی داده‌ها." });
+//     }
+
+//     var token = Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+
+//     if (string.IsNullOrEmpty(token))
+//     {
+//         return Unauthorized(new { StatusCode = 401, Message = "توکن ارسال نشده است. لطفاً وارد حساب خود شوید." });
+//     }
+
+//     try
+//     {
+//         var handler = new JwtSecurityTokenHandler();
+//         var jwtToken = handler.ReadJwtToken(token);
+
+//         var userIdClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == "UserId")?.Value;
+//         if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int userId))
+//         {
+//             return Unauthorized(new { StatusCode = 401, Message = "توکن نامعتبر است. لطفاً دوباره وارد شوید." });
+//         }
+
+//         var user = await _context.users.FindAsync(userId);
+//         if (user == null)
+//         {
+//             return NotFound(new { StatusCode = 404, Message = "کاربر یافت نشد." });
+//         }
+
+//         // بررسی رمز عبور فعلی
+//         if (user.password != _calculatorService.HashPassword(model.CurrentPassword))
+//         {
+//             return BadRequest(new { StatusCode = 400, Message = "رمز عبور فعلی نادرست است." });
+//         }
+
+//         // بررسی پیچیدگی رمز عبور جدید (مثلاً حداقل ۸ کاراکتر)
+//         if (model.NewPassword.Length < 6)
+//         {
+//             return BadRequest(new { StatusCode = 400, Message = "رمز عبور جدید باید حداقل ۸ کاراکتر باشد." });
+//         }
+
+//         // به‌روزرسانی رمز عبور
+//         user.password = _calculatorService.HashPassword(model.NewPassword);
+//         _context.users.Update(user);
+//         await _context.SaveChangesAsync();
+
+//         return Ok(new { StatusCode = 200, Message = "رمز عبور با موفقیت تغییر یافت." });
+//     }
+//     catch (SecurityTokenException)
+//     {
+//         return Unauthorized(new { StatusCode = 401, Message = "توکن منقضی شده یا نامعتبر است. لطفاً دوباره وارد شوید." });
+//     }
+//     catch
+//     {
+//         return StatusCode(500, new { StatusCode = 500, Message = "خطای داخلی سرور. لطفاً بعداً دوباره تلاش کنید." });
+//     }
+// }
+
+//  انقضای توکن قبلی و جایگزینی 
+
+[HttpPut("change-password")]
+public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDto model)
+{
+    if (!ModelState.IsValid)
+    {
+        return BadRequest(new { StatusCode = 400, Message = "خطا در اعتبارسنجی داده‌ها." });
+    }
+
+    var token = Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+
+    if (string.IsNullOrEmpty(token))
+    {
+        return Unauthorized(new { StatusCode = 401, Message = "توکن ارسال نشده است. لطفاً وارد حساب خود شوید." });
+    }
+
+    try
+    {
+        var handler = new JwtSecurityTokenHandler();
+        var jwtToken = handler.ReadJwtToken(token);
+
+        var userIdClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == "UserId")?.Value;
+        if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int userId))
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(new { StatusCode = 400, Message = "خطا در اعتبارسنجی داده‌ها." });
-            }
-
-            var user = await _context.users.FindAsync(id);
-            if (user == null)
-            {
-                return NotFound(new { StatusCode = 404, Message = "کاربر یافت نشد." });
-            }
-
-            // هش کردن رمز عبور فعلی
-            var hashedCurrentPassword = _calculatorService.HashPassword(model.CurrentPassword);
-
-            // بررسی صحت رمز عبور فعلی
-            if (user.password != hashedCurrentPassword)
-            {
-                return BadRequest(new { StatusCode = 400, Message = "رمز عبور فعلی نادرست است." });
-            }
-
-            // هش کردن رمز عبور جدید و ذخیره آن
-            user.password = _calculatorService.HashPassword(model.NewPassword);
-
-            _context.users.Update(user);
-            await _context.SaveChangesAsync();
-
-            return Ok(new { StatusCode = 200, Message = "رمز عبور با موفقیت تغییر یافت." });
+            return Unauthorized(new { StatusCode = 401, Message = "توکن نامعتبر است. لطفاً دوباره وارد شوید." });
         }
+
+        var user = await _context.users.FindAsync(userId);
+        if (user == null)
+        {
+            return NotFound(new { StatusCode = 404, Message = "کاربر یافت نشد." });
+        }
+
+        // بررسی رمز عبور فعلی
+        if (user.password != _calculatorService.HashPassword(model.CurrentPassword))
+        {
+            return BadRequest(new { StatusCode = 400, Message = "رمز عبور فعلی نادرست است." });
+        }
+
+        // بررسی پیچیدگی رمز عبور جدید
+        if (model.NewPassword.Length < 6)
+        {
+            return BadRequest(new { StatusCode = 400, Message = "رمز عبور جدید باید حداقل ۶ کاراکتر باشد." });
+        }
+
+        // به‌روزرسانی رمز عبور
+        user.password = _calculatorService.HashPassword(model.NewPassword);
+        _context.users.Update(user);
+        await _context.SaveChangesAsync();
+
+        // منقضی کردن توکن قبلی
+        var storedToken = await _context.userTokens.FirstOrDefaultAsync(ut => ut.Token == token && !ut.IsExpired);
+        if (storedToken != null)
+        {
+            storedToken.IsExpired = true;
+            _context.userTokens.Update(storedToken);
+            await _context.SaveChangesAsync();
+        }
+
+        // صدور توکن جدید
+        var newToken = _calculatorService.GenerateJwtToken(user);
+
+        return Ok(new { StatusCode = 200, Message = "رمز عبور با موفقیت تغییر یافت.", Token = newToken });
+    }
+    catch (SecurityTokenException)
+    {
+        return Unauthorized(new { StatusCode = 401, Message = "توکن منقضی شده یا نامعتبر است. لطفاً دوباره وارد شوید." });
+    }
+    catch
+    {
+        return StatusCode(500, new { StatusCode = 500, Message = "خطای داخلی سرور. لطفاً بعداً دوباره تلاش کنید." });
+    }
+}
+
+
 
         [HttpGet("get/{id}")]
         public async Task<IActionResult> GetUserById(int id)
@@ -125,21 +322,72 @@ public async Task<IActionResult> UpdateUser(int id, [FromBody] UpdateUserPanelDt
 
             return Ok(new { StatusCode = 200, Message = "لیست کاربران دریافت شد.", Data = users });
         }
+        
 
-        [HttpDelete("delete/{id}")]
-        public async Task<IActionResult> DeleteUser(int id)
+[HttpDelete("delete-account")]
+public async Task<IActionResult> DeleteAccount()
+{
+    var token = Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+    if (string.IsNullOrEmpty(token))
+    {
+        _logger.LogWarning("Authorization token is missing.");
+        return Unauthorized(new { StatusCode = 401, Message = "توکن معتبر نیست." });
+    }
+
+    try
+    {
+        var handler = new JwtSecurityTokenHandler();
+        var jwtToken = handler.ReadJwtToken(token);
+
+        var userIdClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == "UserId")?.Value;
+        if (userIdClaim == null)
         {
-            var user = await _context.users.FindAsync(id);
-            if (user == null)
-            {
-                return NotFound(new { StatusCode = 404, Message = "کاربر یافت نشد." });
-            }
-
-            _context.users.Remove(user);
-            await _context.SaveChangesAsync();
-
-            return Ok(new { StatusCode = 200, Message = "حساب کاربری با موفقیت حذف شد." });
+            _logger.LogWarning("Token does not contain UserId claim.");
+            return Unauthorized(new { StatusCode = 401, Message = "توکن معتبر نیست." });
         }
+
+        var userId = int.Parse(userIdClaim);
+
+        // پیدا کردن کاربر در دیتابیس
+        var user = await _context.users.FindAsync(userId);
+        if (user == null)
+        {
+            _logger.LogWarning("User not found with ID {UserId}.", userId);
+            return NotFound(new { StatusCode = 404, Message = "کاربر پیدا نشد." });
+        }
+
+        // حذف رکوردهای وابسته در جدول Deceaseds
+        var deceasedRecords = await _context.Deceaseds.Where(d => d.UserId == user.Id).ToListAsync();
+        if (deceasedRecords.Any())
+        {
+            _logger.LogInformation("Deleting {Count} related records from Deceaseds for user {UserId}.", deceasedRecords.Count, userId);
+            _context.Deceaseds.RemoveRange(deceasedRecords);
+        }
+
+        _logger.LogInformation("User {UserId} found. Invalidating tokens.", userId);
+
+        // پیدا کردن و منقضی کردن توکن‌های کاربر
+        var userTokens = await _context.userTokens.Where(ut => ut.UserId == user.Id).ToListAsync();
+        foreach (var userToken in userTokens)
+        {
+            userToken.IsExpired = true;
+            _logger.LogDebug("Token {TokenId} invalidated for user {UserId}.", userToken.Id, userId);
+        }
+
+        // حذف کاربر
+        _context.users.Remove(user);
+        await _context.SaveChangesAsync();
+
+        _logger.LogInformation("User {UserId} deleted successfully.", userId);
+        return Ok(new { StatusCode = 204, Message = "حساب کاربری شما با موفقیت حذف شد." });
+    }
+    catch (Exception ex)
+    {
+        _logger.LogError(ex, "Error occurred while deleting user account.");
+        return StatusCode(500, new { StatusCode = 500, Message = "خطای داخلی سرور.", Error = ex.Message });
+    }
+}
+
 
 
     }

@@ -8,6 +8,6 @@ namespace api.View
     public class CondolenceMessageUpdateView
     {
         public int Id { get; set; }
-    public bool IsApproved { get; set; }
+     public CommentStatus Status { get; set; } 
     }
 }

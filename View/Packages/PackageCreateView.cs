@@ -45,5 +45,7 @@ namespace api.View.Packages
     public bool SharingEnabled { get; set; } = false; // قابلیت به اشتراک گذاری
     public bool File360DegreeEnabled { get; set; } = false; // مجوز قراردادن فایل 360 درجه
     public bool UpdateCapabilityEnabled { get; set; } = false; // قابلیت به روز رسانی
+    public bool IsFreePackage { get; set; } = false; 
+
     }
 }

@@ -673,3 +673,4 @@ D:\DeadWebsit\api\deathSite\obj\Release\net8.0\refint\api.dll
 D:\DeadWebsit\api\deathSite\obj\Release\net8.0\api.pdb
 D:\DeadWebsit\api\deathSite\obj\Release\net8.0\api.genruntimeconfig.cache
 D:\DeadWebsit\api\deathSite\obj\Release\net8.0\ref\api.dll
+D:\DeadWebsit\api\deathSite\bin\Release\net8.0\QRCoder.dll

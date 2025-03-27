@@ -13,6 +13,10 @@ namespace api.View.Blog
         public string Title { get; set; }
 
         [Required(ErrorMessage = "محتوا الزامی است.")]
+
+         public string Description { get; set; } // فیلد توضیحات اضافه شده
+
+        [Required(ErrorMessage = "محتوا الزامی است.")]
         public string Content { get; set; }
     }
 

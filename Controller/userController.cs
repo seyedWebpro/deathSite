@@ -11,6 +11,7 @@ using api.Middleware;
 using api.Model;
 using api.Services;
 using api.View;
+using deathSite.Model;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -22,11 +23,13 @@ namespace api.Controller
     public class userController : ControllerBase
     {
         private readonly apiContext _context;
+         private readonly ILogger<userController> _logger;
         private readonly ISmsService _smsService;
         private readonly ICalculatorService _calculatorService;
         private readonly ICacheService _cacheService;
-        public userController(apiContext context, ISmsService smsService, ICalculatorService calculatorService, IConfiguration configuration, ICacheService cacheService)
+        public userController(apiContext context,ILogger<userController> logger , ISmsService smsService, ICalculatorService calculatorService, IConfiguration configuration, ICacheService cacheService)
         {
+              _logger = logger;
             _context = context;
             _smsService = smsService;
             _calculatorService = calculatorService;
@@ -150,61 +153,130 @@ namespace api.Controller
         }
 
 
-        [HttpPost("[action]")]
-        public async Task<IActionResult> RegisterUser([FromBody] registerView model)
+        // [HttpPost("[action]")]
+        // public async Task<IActionResult> RegisterUser([FromBody] registerView model)
+        // {
+        //     // بررسی اعتبارسنجی مدل
+        //     var validationResult = HelperMethods.HandleValidationErrors(ModelState);
+        //     if (validationResult != null)
+        //     {
+        //         return validationResult;
+        //     }
+
+        //     var existingUser = await _context.users.FirstOrDefaultAsync(u => u.phoneNumber == model.phoneNumber);
+
+        //     if (existingUser != null)
+        //     {
+        //         return BadRequest(new
+        //         {
+        //             StatusCode = 400,
+        //             Message = "این شماره تلفن قبلاً ثبت‌نام شده است."
+        //         });
+        //     }
+
+        //     // هش کردن رمز عبور
+        //     var hashedPassword = _calculatorService.HashPassword(model.password);
+        //     if (string.IsNullOrEmpty(hashedPassword))
+        //     {
+        //         throw new Exception("خطا در هش کردن رمز عبور.");
+        //     }
+
+        //     // ایجاد کاربر جدید
+        //     var newUser = new User
+        //     {
+        //         firstName = model.firstName,
+        //         lastName = model.lastName,
+        //         password = hashedPassword,
+        //         phoneNumber = model.phoneNumber,
+        //         role = "User"
+        //     };
+
+        //     await _context.users.AddAsync(newUser);
+        //     await _context.SaveChangesAsync();
+
+        //     // تولید توکن
+        //     var token = _calculatorService.GenerateJwtToken(newUser);
+        //     if (string.IsNullOrEmpty(token))
+        //     {
+        //         return StatusCode(500, new { Message = "خطا در تولید توکن." });
+        //     }
+
+        //     return Ok(new
+        //     {
+        //         StatusCode = 200,
+        //         Message = "ثبت‌نام با موفقیت انجام شد.",
+        //         Token = token
+        //     });
+        // }
+
+        // اضافه کردن اختصاص پکیج رایگان در صورت ثبت نام کاربر
+
+[HttpPost("[action]")]
+public async Task<IActionResult> RegisterUser([FromBody] registerView model)
+{
+    // بررسی اعتبارسنجی مدل
+    var validationResult = HelperMethods.HandleValidationErrors(ModelState);
+    if (validationResult != null)
+    {
+        return validationResult;
+    }
+
+    var existingUser = await _context.users.FirstOrDefaultAsync(u => u.phoneNumber == model.phoneNumber);
+
+    if (existingUser != null)
+    {
+        return BadRequest(new
         {
-            // بررسی اعتبارسنجی مدل
-            var validationResult = HelperMethods.HandleValidationErrors(ModelState);
-            if (validationResult != null)
-            {
-                return validationResult;
-            }
+            StatusCode = 400,
+            Message = "این شماره تلفن قبلاً ثبت‌نام شده است."
+        });
+    }
 
-            var existingUser = await _context.users.FirstOrDefaultAsync(u => u.phoneNumber == model.phoneNumber);
+    // هش کردن رمز عبور
+    var hashedPassword = _calculatorService.HashPassword(model.password);
+    if (string.IsNullOrEmpty(hashedPassword))
+    {
+        _logger.LogError("خطا در هش کردن رمز عبور برای کاربر: {PhoneNumber}", model.phoneNumber);
+        throw new Exception("خطا در هش کردن رمز عبور.");
+    }
 
-            if (existingUser != null)
-            {
-                return BadRequest(new
-                {
-                    StatusCode = 400,
-                    Message = "این شماره تلفن قبلاً ثبت‌نام شده است."
-                });
-            }
+    // ایجاد کاربر جدید
+    var newUser = new User
+    {
+        firstName = model.firstName,
+        lastName = model.lastName,
+        password = hashedPassword,
+        phoneNumber = model.phoneNumber,
+        role = "User"
+    };
 
-            // هش کردن رمز عبور
-            var hashedPassword = _calculatorService.HashPassword(model.password);
-            if (string.IsNullOrEmpty(hashedPassword))
-            {
-                throw new Exception("خطا در هش کردن رمز عبور.");
-            }
+    try
+    {
+        await _context.users.AddAsync(newUser);
+        await _context.SaveChangesAsync();
+    }
+    catch (Exception ex)
+    {
+        _logger.LogError(ex, "خطا در ذخیره‌سازی کاربر جدید با شماره تلفن: {PhoneNumber}", model.phoneNumber);
+        return StatusCode(500, new { Message = "خطای داخلی سرور. لطفاً مجدداً تلاش کنید." });
+    }
 
-            // ایجاد کاربر جدید
-            var newUser = new User
-            {
-                firstName = model.firstName,
-                lastName = model.lastName,
-                password = hashedPassword,
-                phoneNumber = model.phoneNumber,
-                role = "User"
-            };
+    // تولید توکن
+    var token = _calculatorService.GenerateJwtToken(newUser);
+    if (string.IsNullOrEmpty(token))
+    {
+        _logger.LogError("خطا در تولید توکن برای کاربر: {PhoneNumber}", model.phoneNumber);
+        return StatusCode(500, new { Message = "خطا در تولید توکن." });
+    }
 
-            await _context.users.AddAsync(newUser);
-            await _context.SaveChangesAsync();
+    return Ok(new
+    {
+        StatusCode = 200,
+        Message = "ثبت‌نام با موفقیت انجام شد.",
+        Token = token
+    });
+}
 
-            // تولید توکن
-            var token = _calculatorService.GenerateJwtToken(newUser);
-            if (string.IsNullOrEmpty(token))
-            {
-                return StatusCode(500, new { Message = "خطا در تولید توکن." });
-            }
-
-            return Ok(new
-            {
-                StatusCode = 200,
-                Message = "ثبت‌نام با موفقیت انجام شد.",
-                Token = token
-            });
-        }
 
         [HttpPost("[action]")]
         public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordView model)

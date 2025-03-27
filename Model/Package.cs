@@ -38,8 +38,12 @@ public class Package
         public bool File360DegreeEnabled { get; set; }
         public bool UpdateCapabilityEnabled { get; set; }
 
-        // روابط
-        public ICollection<UserPackage> UserPackages { get; set; }
+        // اضافه کردن فیلد برای مشخص کردن پکیج رایگان
+        public bool IsFreePackage { get; set; } = false ;
+
+        public ICollection<DeceasedPackage> DeceasedPackages { get; set; } = new List<DeceasedPackage>();
+public ICollection<Factors> Factors { get; set; } = new List<Factors>();
+
     }
 
 }

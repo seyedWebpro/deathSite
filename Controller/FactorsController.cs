@@ -30,13 +30,16 @@ namespace deathSite.Controller
         public async Task<IActionResult> GetAllFactors()
         {
             var factors = await _context.Factors
-                .Include(p => p.User)
-                .Include(p => p.UserPackage)
+                .Include(f => f.User)
+                .Include(f => f.Package)
+                .Include(f => f.DeceasedPackages) // اضافه کردن DeceasedPackages
+                    .ThenInclude(dp => dp.Deceased) // ارتباط با Deceased از طریق DeceasedPackage
                 .Select(f => new FactorsViewDto
                 {
                     Id = f.Id,
                     UserId = f.UserId,
-                    UserPackageId = f.UserPackageId,
+                    UserPackageId = f.PackageId, // استفاده از PackageId به جای UserPackageId
+                    UserName = f.User.firstName + " " + f.User.lastName, // افزودن نام کاربری
                     TransactionDate = f.TransactionDate,
                     Amount = f.Amount,
                     Status = f.Status,
@@ -44,44 +47,15 @@ namespace deathSite.Controller
                     TrackingNumber = f.TrackingNumber,
                     PaymentGateway = f.PaymentGateway,
                     Description = f.Description,
-                    OrderId = f.OrderId
+                    OrderId = f.OrderId,
+                    DeceasedIds = f.DeceasedPackages.Select(dp => dp.DeceasedId).ToList(), // استخراج شناسه‌های متوفیان
+                    DeceasedNames = f.DeceasedPackages.Select(dp => dp.Deceased.FullName).ToList() // استخراج نام متوفیان
                 })
                 .ToListAsync();
 
-            return Ok(new { StatusCode = 200, Message = "فاکتورها با موفقیت دریافت شدند.", Data = factors });
+            return Ok(new { StatusCode = 200, Message = "تمامی تراکنش‌ها با موفقیت دریافت شدند.", Data = factors });
         }
 
-        // GET: api/Factors/{id}
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetFactorById(int id)
-        {
-            var factor = await _context.Factors
-                .Include(p => p.User)
-                .Include(p => p.UserPackage)
-                .Where(i => i.Id == id)
-                .Select(f => new FactorsViewDto
-                {
-                    Id = f.Id,
-                    UserId = f.UserId,
-                    UserPackageId = f.UserPackageId,
-                    TransactionDate = f.TransactionDate,
-                    Amount = f.Amount,
-                    Status = f.Status,
-                    TransactionType = f.TransactionType,
-                    TrackingNumber = f.TrackingNumber,
-                    PaymentGateway = f.PaymentGateway,
-                    Description = f.Description,
-                    OrderId = f.OrderId
-                })
-                .FirstOrDefaultAsync();
-
-            if (factor == null)
-            {
-                return NotFound(new { StatusCode = 404, Message = "فاکتور با شناسه مورد نظر یافت نشد." });
-            }
-
-            return Ok(new { StatusCode = 200, Message = "فاکتور با موفقیت دریافت شد.", Data = factor });
-        }
 
         // GET: api/Factors/User/{userId}
         [HttpGet("User/{userId}")]
@@ -94,13 +68,15 @@ namespace deathSite.Controller
             }
 
             var factors = await _context.Factors
-                .Where(i => i.UserId == userId)
-                .Include(p => p.UserPackage)
+                .Where(f => f.UserId == userId)
+                .Include(f => f.Package) // بارگذاری اطلاعات پکیج
+                .Include(f => f.DeceasedPackages) // بارگذاری ارتباط با متوفیان
+                .ThenInclude(dp => dp.Deceased) // دریافت اطلاعات متوفیان
                 .Select(f => new FactorsViewDto
                 {
                     Id = f.Id,
                     UserId = f.UserId,
-                    UserPackageId = f.UserPackageId,
+                    UserPackageId = f.PackageId,
                     TransactionDate = f.TransactionDate,
                     Amount = f.Amount,
                     Status = f.Status,
@@ -108,59 +84,33 @@ namespace deathSite.Controller
                     TrackingNumber = f.TrackingNumber,
                     PaymentGateway = f.PaymentGateway,
                     Description = f.Description,
-                    OrderId = f.OrderId
+                    OrderId = f.OrderId,
+
+                    // اصلاح شده برای پشتیبانی از چند متوفی
+                    DeceasedIds = f.DeceasedPackages.Select(dp => dp.DeceasedId).ToList(),
+                    DeceasedNames = f.DeceasedPackages.Select(dp => dp.Deceased.FullName).ToList()
                 })
                 .ToListAsync();
 
             return Ok(new { StatusCode = 200, Message = "فاکتورهای کاربر با موفقیت دریافت شدند.", Data = factors });
         }
 
-        // POST: api/Factors/Filter
-        [HttpPost("Filter")]
-        public async Task<IActionResult> FilterFactors([FromBody] FactorsFilterDto filterDto)
+        // GET: api/Factors/Deceased/{deceasedId}
+        [HttpGet("Deceased/{deceasedId}")]
+        public async Task<IActionResult> GetFactorsByDeceasedId(int deceasedId)
         {
-            var query = _context.Factors
-                .Include(p => p.User)
-                .Include(p => p.UserPackage)
-                .AsQueryable();
-
-            if (filterDto.FromDate.HasValue)
-            {
-                query = query.Where(i => i.TransactionDate >= filterDto.FromDate.Value);
-            }
-
-            if (filterDto.ToDate.HasValue)
-            {
-                query = query.Where(i => i.TransactionDate <= filterDto.ToDate.Value);
-            }
-
-            if (filterDto.UserId.HasValue)
-            {
-                query = query.Where(i => i.UserId == filterDto.UserId.Value);
-            }
-
-            if (!string.IsNullOrEmpty(filterDto.Status))
-            {
-                query = query.Where(i => i.Status == filterDto.Status);
-            }
-
-            if (!string.IsNullOrEmpty(filterDto.PaymentGateway))
-            {
-                query = query.Where(i => i.PaymentGateway == filterDto.PaymentGateway);
-            }
-
-            if (!string.IsNullOrEmpty(filterDto.TransactionType))
-            {
-                query = query.Where(i => i.TransactionType == filterDto.TransactionType);
-            }
-
-            var factors = await query
+            var factors = await _context.Factors
+                .Include(f => f.User)
+                .Include(f => f.Package)
+                .Include(f => f.DeceasedPackages)
+                    .ThenInclude(dp => dp.Deceased)
+                .Where(f => f.DeceasedId == deceasedId || f.DeceasedPackages.Any(dp => dp.DeceasedId == deceasedId))
                 .Select(f => new FactorsViewDto
                 {
                     Id = f.Id,
                     UserId = f.UserId,
-                    UserPackageId = f.UserPackageId,
-                    
+                    UserPackageId = f.PackageId,
+                    UserName = f.User.firstName + " " + f.User.lastName,
                     TransactionDate = f.TransactionDate,
                     Amount = f.Amount,
                     Status = f.Status,
@@ -168,165 +118,233 @@ namespace deathSite.Controller
                     TrackingNumber = f.TrackingNumber,
                     PaymentGateway = f.PaymentGateway,
                     Description = f.Description,
-                    OrderId = f.OrderId
+                    OrderId = f.OrderId,
+                    DeceasedIds = f.DeceasedPackages.Select(dp => dp.DeceasedId).ToList(),
+                    DeceasedNames = f.DeceasedPackages.Select(dp => dp.Deceased.FullName).ToList()
                 })
                 .ToListAsync();
 
-            return Ok(new { StatusCode = 200, Message = "فاکتورهای فیلتر شده با موفقیت دریافت شدند.", Data = factors });
+            if (factors == null || factors.Count == 0)
+            {
+                return NotFound(new { StatusCode = 404, Message = "فاکتوری برای متوفی با این شناسه یافت نشد." });
+            }
+
+            return Ok(new { StatusCode = 200, Message = "فاکتورهای مربوط به متوفی با موفقیت دریافت شدند.", Data = factors });
         }
 
-        // POST: api/Factors
-        [HttpPost]
-        public async Task<IActionResult> CreateFactor([FromBody] FactorsCreateDto factorDto)
-        {
-            var validationResult = HelperMethods.HandleValidationErrors(ModelState);
-            if (validationResult != null)
-            {
-                return validationResult;
-            }
 
-            var userExists = await _context.users.AnyAsync(u => u.Id == factorDto.UserId);
-            if (!userExists)
-            {
-                return BadRequest(new { StatusCode = 400, Message = "کاربر با شناسه مورد نظر یافت نشد." });
-            }
+        // // POST: api/Factors/Filter
+        // [HttpPost("Filter")]
+        // public async Task<IActionResult> FilterFactors([FromBody] FactorsFilterDto filterDto)
+        // {
+        //     var query = _context.Factors
+        //         .Include(p => p.User)
+        //         .Include(p => p.UserPackage)
+        //         .AsQueryable();
 
-            if (factorDto.UserPackageId.HasValue)
-            {
-                var userPackageExists = await _context.UserPackages.AnyAsync(up => up.Id == factorDto.UserPackageId.Value);
-                if (!userPackageExists)
-                {
-                    return BadRequest(new { StatusCode = 400, Message = "پکیج کاربر با شناسه مورد نظر یافت نشد." });
-                }
-            }
+        //     if (filterDto.FromDate.HasValue)
+        //     {
+        //         query = query.Where(i => i.TransactionDate >= filterDto.FromDate.Value);
+        //     }
 
-            var factor = new Factors
-            {
-                UserId = factorDto.UserId,
-                UserPackageId = factorDto.UserPackageId,
-                
-                TransactionDate = factorDto.TransactionDate,
-                Amount = factorDto.Amount,
-                Status = factorDto.Status,
-                TransactionType = factorDto.TransactionType,
-                TrackingNumber = factorDto.TrackingNumber,
-                PaymentGateway = factorDto.PaymentGateway,
-                Description = factorDto.Description,
-                OrderId = factorDto.OrderId
-            };
+        //     if (filterDto.ToDate.HasValue)
+        //     {
+        //         query = query.Where(i => i.TransactionDate <= filterDto.ToDate.Value);
+        //     }
 
-            _context.Factors.Add(factor);
-            await _context.SaveChangesAsync();
+        //     if (filterDto.UserId.HasValue)
+        //     {
+        //         query = query.Where(i => i.UserId == filterDto.UserId.Value);
+        //     }
 
-            var result = new FactorsViewDto
-            {
-                Id = factor.Id,
-                UserId = factor.UserId,
-                UserPackageId = factor.UserPackageId,
-                TransactionDate = factor.TransactionDate,
-                Amount = factor.Amount,
-                Status = factor.Status,
-                TransactionType = factor.TransactionType,
-                TrackingNumber = factor.TrackingNumber,
-                PaymentGateway = factor.PaymentGateway,
-                Description = factor.Description,
-                OrderId = factor.OrderId
-            };
+        //     if (!string.IsNullOrEmpty(filterDto.Status))
+        //     {
+        //         query = query.Where(i => i.Status == filterDto.Status);
+        //     }
 
-            return Ok(new { StatusCode = 201, Message = "فاکتور با موفقیت ایجاد شد.", Data = result });
-        }
+        //     if (!string.IsNullOrEmpty(filterDto.PaymentGateway))
+        //     {
+        //         query = query.Where(i => i.PaymentGateway == filterDto.PaymentGateway);
+        //     }
 
-        // PUT: api/Factors/{id}
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateFactor(int id, [FromBody] FactorsUpdateDto factorDto)
-        {
-            var factor = await _context.Factors.FindAsync(id);
-            if (factor == null)
-            {
-                return NotFound(new { StatusCode = 404, Message = "فاکتور با شناسه مورد نظر یافت نشد." });
-            }
+        //     if (!string.IsNullOrEmpty(filterDto.TransactionType))
+        //     {
+        //         query = query.Where(i => i.TransactionType == filterDto.TransactionType);
+        //     }
 
-            // Update only the fields that are not null
-            if (factorDto.UserId.HasValue)
-            {
-                var userExists = await _context.users.AnyAsync(u => u.Id == factorDto.UserId.Value);
-                if (!userExists)
-                {
-                    return BadRequest(new { StatusCode = 400, Message = "کاربر با شناسه مورد نظر یافت نشد." });
-                }
-                factor.UserId = factorDto.UserId.Value;
-            }
+        //     var factors = await query
+        //         .Select(f => new FactorsViewDto
+        //         {
+        //             Id = f.Id,
+        //             UserId = f.UserId,
+        //             UserPackageId = f.UserPackageId,
 
-            if (factorDto.UserPackageId.HasValue)
-            {
-                var userPackageExists = await _context.UserPackages.AnyAsync(up => up.Id == factorDto.UserPackageId.Value);
-                if (!userPackageExists)
-                {
-                    return BadRequest(new { StatusCode = 400, Message = "پکیج کاربر با شناسه مورد نظر یافت نشد." });
-                }
-                factor.UserPackageId = factorDto.UserPackageId;
-            }
+        //             TransactionDate = f.TransactionDate,
+        //             Amount = f.Amount,
+        //             Status = f.Status,
+        //             TransactionType = f.TransactionType,
+        //             TrackingNumber = f.TrackingNumber,
+        //             PaymentGateway = f.PaymentGateway,
+        //             Description = f.Description,
+        //             OrderId = f.OrderId
+        //         })
+        //         .ToListAsync();
+
+        //     return Ok(new { StatusCode = 200, Message = "فاکتورهای فیلتر شده با موفقیت دریافت شدند.", Data = factors });
+        // }
+
+        // // POST: api/Factors
+        // [HttpPost]
+        // public async Task<IActionResult> CreateFactor([FromBody] FactorsCreateDto factorDto)
+        // {
+        //     var validationResult = HelperMethods.HandleValidationErrors(ModelState);
+        //     if (validationResult != null)
+        //     {
+        //         return validationResult;
+        //     }
+
+        //     var userExists = await _context.users.AnyAsync(u => u.Id == factorDto.UserId);
+        //     if (!userExists)
+        //     {
+        //         return BadRequest(new { StatusCode = 400, Message = "کاربر با شناسه مورد نظر یافت نشد." });
+        //     }
+
+        //     if (factorDto.UserPackageId.HasValue)
+        //     {
+        //         var userPackageExists = await _context.UserPackages.AnyAsync(up => up.Id == factorDto.UserPackageId.Value);
+        //         if (!userPackageExists)
+        //         {
+        //             return BadRequest(new { StatusCode = 400, Message = "پکیج کاربر با شناسه مورد نظر یافت نشد." });
+        //         }
+        //     }
+
+        //     var factor = new Factors
+        //     {
+        //         UserId = factorDto.UserId,
+        //         UserPackageId = factorDto.UserPackageId,
+
+        //         TransactionDate = factorDto.TransactionDate,
+        //         Amount = factorDto.Amount,
+        //         Status = factorDto.Status,
+        //         TransactionType = factorDto.TransactionType,
+        //         TrackingNumber = factorDto.TrackingNumber,
+        //         PaymentGateway = factorDto.PaymentGateway,
+        //         Description = factorDto.Description,
+        //         OrderId = factorDto.OrderId
+        //     };
+
+        //     _context.Factors.Add(factor);
+        //     await _context.SaveChangesAsync();
+
+        //     var result = new FactorsViewDto
+        //     {
+        //         Id = factor.Id,
+        //         UserId = factor.UserId,
+        //         UserPackageId = factor.UserPackageId,
+        //         TransactionDate = factor.TransactionDate,
+        //         Amount = factor.Amount,
+        //         Status = factor.Status,
+        //         TransactionType = factor.TransactionType,
+        //         TrackingNumber = factor.TrackingNumber,
+        //         PaymentGateway = factor.PaymentGateway,
+        //         Description = factor.Description,
+        //         OrderId = factor.OrderId
+        //     };
+
+        //     return Ok(new { StatusCode = 201, Message = "فاکتور با موفقیت ایجاد شد.", Data = result });
+        // }
+
+        // // PUT: api/Factors/{id}
+        // [HttpPut("{id}")]
+        // public async Task<IActionResult> UpdateFactor(int id, [FromBody] FactorsUpdateDto factorDto)
+        // {
+        //     var factor = await _context.Factors.FindAsync(id);
+        //     if (factor == null)
+        //     {
+        //         return NotFound(new { StatusCode = 404, Message = "فاکتور با شناسه مورد نظر یافت نشد." });
+        //     }
+
+        //     // Update only the fields that are not null
+        //     if (factorDto.UserId.HasValue)
+        //     {
+        //         var userExists = await _context.users.AnyAsync(u => u.Id == factorDto.UserId.Value);
+        //         if (!userExists)
+        //         {
+        //             return BadRequest(new { StatusCode = 400, Message = "کاربر با شناسه مورد نظر یافت نشد." });
+        //         }
+        //         factor.UserId = factorDto.UserId.Value;
+        //     }
+
+        //     if (factorDto.UserPackageId.HasValue)
+        //     {
+        //         var userPackageExists = await _context.UserPackages.AnyAsync(up => up.Id == factorDto.UserPackageId.Value);
+        //         if (!userPackageExists)
+        //         {
+        //             return BadRequest(new { StatusCode = 400, Message = "پکیج کاربر با شناسه مورد نظر یافت نشد." });
+        //         }
+        //         factor.UserPackageId = factorDto.UserPackageId;
+        //     }
 
 
-            if (factorDto.TransactionDate.HasValue)
-            {
-                factor.TransactionDate = factorDto.TransactionDate.Value;
-            }
+        //     if (factorDto.TransactionDate.HasValue)
+        //     {
+        //         factor.TransactionDate = factorDto.TransactionDate.Value;
+        //     }
 
-            if (factorDto.Amount.HasValue)
-            {
-                factor.Amount = factorDto.Amount.Value;
-            }
+        //     if (factorDto.Amount.HasValue)
+        //     {
+        //         factor.Amount = factorDto.Amount.Value;
+        //     }
 
-            if (factorDto.Status != null)
-            {
-                factor.Status = factorDto.Status;
-            }
+        //     if (factorDto.Status != null)
+        //     {
+        //         factor.Status = factorDto.Status;
+        //     }
 
-            if (factorDto.TransactionType != null)
-            {
-                factor.TransactionType = factorDto.TransactionType;
-            }
+        //     if (factorDto.TransactionType != null)
+        //     {
+        //         factor.TransactionType = factorDto.TransactionType;
+        //     }
 
-            if (factorDto.TrackingNumber != null)
-            {
-                factor.TrackingNumber = factorDto.TrackingNumber;
-            }
+        //     if (factorDto.TrackingNumber != null)
+        //     {
+        //         factor.TrackingNumber = factorDto.TrackingNumber;
+        //     }
 
-            if (factorDto.PaymentGateway != null)
-            {
-                factor.PaymentGateway = factorDto.PaymentGateway;
-            }
+        //     if (factorDto.PaymentGateway != null)
+        //     {
+        //         factor.PaymentGateway = factorDto.PaymentGateway;
+        //     }
 
-            if (factorDto.Description != null)
-            {
-                factor.Description = factorDto.Description;
-            }
+        //     if (factorDto.Description != null)
+        //     {
+        //         factor.Description = factorDto.Description;
+        //     }
 
-            if (factorDto.OrderId.HasValue)
-            {
-                factor.OrderId = factorDto.OrderId.Value;
-            }
+        //     if (factorDto.OrderId.HasValue)
+        //     {
+        //         factor.OrderId = factorDto.OrderId.Value;
+        //     }
 
-            await _context.SaveChangesAsync();
+        //     await _context.SaveChangesAsync();
 
-            var result = new FactorsViewDto
-            {
-                Id = factor.Id,
-                UserId = factor.UserId,
-                UserPackageId = factor.UserPackageId,
-                TransactionDate = factor.TransactionDate,
-                Amount = factor.Amount,
-                Status = factor.Status,
-                TransactionType = factor.TransactionType,
-                TrackingNumber = factor.TrackingNumber,
-                PaymentGateway = factor.PaymentGateway,
-                Description = factor.Description,
-                OrderId = factor.OrderId
-            };
+        //     var result = new FactorsViewDto
+        //     {
+        //         Id = factor.Id,
+        //         UserId = factor.UserId,
+        //         UserPackageId = factor.UserPackageId,
+        //         TransactionDate = factor.TransactionDate,
+        //         Amount = factor.Amount,
+        //         Status = factor.Status,
+        //         TransactionType = factor.TransactionType,
+        //         TrackingNumber = factor.TrackingNumber,
+        //         PaymentGateway = factor.PaymentGateway,
+        //         Description = factor.Description,
+        //         OrderId = factor.OrderId
+        //     };
 
-            return Ok(new { StatusCode = 200, Message = "فاکتور با موفقیت بروزرسانی شد.", Data = result });
-        }
+        //     return Ok(new { StatusCode = 200, Message = "فاکتور با موفقیت بروزرسانی شد.", Data = result });
+        // }
 
         // DELETE: api/Factors/{id}
         [HttpDelete("{id}")]
@@ -344,69 +362,69 @@ namespace deathSite.Controller
             return Ok(new { StatusCode = 200, Message = "فاکتور با موفقیت حذف شد." });
         }
 
-        // GET: api/Factors/Dashboard/Summary
-        [HttpGet("Dashboard/Summary")]
-        public async Task<IActionResult> GetDashboardSummary()
-        {
-            var today = DateTime.Today;
-            var lastMonth = today.AddMonths(-1);
-            var lastYear = today.AddYears(-1);
+        // // GET: api/Factors/Dashboard/Summary
+        // [HttpGet("Dashboard/Summary")]
+        // public async Task<IActionResult> GetDashboardSummary()
+        // {
+        //     var today = DateTime.Today;
+        //     var lastMonth = today.AddMonths(-1);
+        //     var lastYear = today.AddYears(-1);
 
-            var totalFactors = await _context.Factors.CountAsync();
-            var successfulFactors = await _context.Factors.CountAsync(i => i.Status == "Success");
-            var totalAmount = await _context.Factors
-                .Where(i => i.Status == "Success")
-                .SumAsync(i => i.Amount);
+        //     var totalFactors = await _context.Factors.CountAsync();
+        //     var successfulFactors = await _context.Factors.CountAsync(i => i.Status == "Success");
+        //     var totalAmount = await _context.Factors
+        //         .Where(i => i.Status == "Success")
+        //         .SumAsync(i => i.Amount);
 
-            var todayFactors = await _context.Factors
-                .Where(i => i.TransactionDate.Date == today)
-                .CountAsync();
+        //     var todayFactors = await _context.Factors
+        //         .Where(i => i.TransactionDate.Date == today)
+        //         .CountAsync();
 
-            var lastMonthFactors = await _context.Factors
-                .Where(i => i.TransactionDate >= lastMonth && i.TransactionDate <= today)
-                .CountAsync();
+        //     var lastMonthFactors = await _context.Factors
+        //         .Where(i => i.TransactionDate >= lastMonth && i.TransactionDate <= today)
+        //         .CountAsync();
 
-            var yearlyFactors = await _context.Factors
-                .Where(i => i.TransactionDate >= lastYear && i.TransactionDate <= today)
-                .CountAsync();
+        //     var yearlyFactors = await _context.Factors
+        //         .Where(i => i.TransactionDate >= lastYear && i.TransactionDate <= today)
+        //         .CountAsync();
 
-            var summary = new
-            {
-                TotalFactors = totalFactors,
-                SuccessfulFactors = successfulFactors,
-                SuccessRate = totalFactors > 0 ? (double)successfulFactors / totalFactors * 100 : 0,
-                TotalAmount = totalAmount,
-                TodayFactors = todayFactors,
-                LastMonthFactors = lastMonthFactors,
-                YearlyFactors = yearlyFactors
-            };
+        //     var summary = new
+        //     {
+        //         TotalFactors = totalFactors,
+        //         SuccessfulFactors = successfulFactors,
+        //         SuccessRate = totalFactors > 0 ? (double)successfulFactors / totalFactors * 100 : 0,
+        //         TotalAmount = totalAmount,
+        //         TodayFactors = todayFactors,
+        //         LastMonthFactors = lastMonthFactors,
+        //         YearlyFactors = yearlyFactors
+        //     };
 
-            return Ok(new { StatusCode = 200, Message = "اطلاعات داشبورد با موفقیت دریافت شد.", Data = summary });
-        }
+        //     return Ok(new { StatusCode = 200, Message = "اطلاعات داشبورد با موفقیت دریافت شد.", Data = summary });
+        // }
 
-        // GET: api/Factors/Statistics/Monthly
-        [HttpGet("Statistics/Monthly")]
-        public async Task<IActionResult> GetMonthlyStatistics(int year)
-        {
-            if (year <= 0)
-            {
-                year = DateTime.Now.Year;
-            }
+        // // GET: api/Factors/Statistics/Monthly
+        // [HttpGet("Statistics/Monthly")]
+        // public async Task<IActionResult> GetMonthlyStatistics(int year)
+        // {
+        //     if (year <= 0)
+        //     {
+        //         year = DateTime.Now.Year;
+        //     }
 
-            var statistics = await _context.Factors
-                .Where(i => i.TransactionDate.Year == year && i.Status == "Success")
-                .GroupBy(i => i.TransactionDate.Month)
-                .Select(g => new
-                {
-                    Month = g.Key,
-                    Count = g.Count(),
-                    TotalAmount = g.Sum(i => i.Amount)
-                })
-                .OrderBy(s => s.Month)
-                .ToListAsync();
+        //     var statistics = await _context.Factors
+        //         .Where(i => i.TransactionDate.Year == year && i.Status == "Success")
+        //         .GroupBy(i => i.TransactionDate.Month)
+        //         .Select(g => new
+        //         {
+        //             Month = g.Key,
+        //             Count = g.Count(),
+        //             TotalAmount = g.Sum(i => i.Amount)
+        //         })
+        //         .OrderBy(s => s.Month)
+        //         .ToListAsync();
 
-            return Ok(new { StatusCode = 200, Message = "آمار ماهانه با موفقیت دریافت شد.", Data = statistics });
-        }
+        //     return Ok(new { StatusCode = 200, Message = "آمار ماهانه با موفقیت دریافت شد.", Data = statistics });
+        // }
 
     }
 }

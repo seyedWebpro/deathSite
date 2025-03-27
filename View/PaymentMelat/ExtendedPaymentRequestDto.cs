@@ -14,6 +14,7 @@ namespace deathSite.View.PaymentMelat
         
         // فیلدهای اضافی برای منطق داخلی (برای ثبت پکیج)
         public int? UserId { get; set; }
+         public int? DeceasedId { get; set; }   
         public int? PackageId { get; set; }
     }   
 }

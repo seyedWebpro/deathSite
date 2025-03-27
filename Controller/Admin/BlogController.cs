@@ -2,6 +2,7 @@ using api.Context;
 using api.Model;
 using api.Services;
 using api.View.Blog;
+using deathSite.View.Blog;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -35,7 +36,8 @@ namespace api.Controller.Admin
             {
                 Title = blogDto.Title,
                 Content = blogDto.Content,
-                PublishedDate = DateTime.UtcNow
+                PublishedDate = DateTime.UtcNow,
+                Description = blogDto.Description
             };
 
             _context.blogs.Add(blog);
@@ -67,6 +69,7 @@ namespace api.Controller.Admin
                     b.Id,
                     b.Title,
                     b.Content,
+                    b.Description,
                     b.PublishedDate,
                     FilePath = b.FilePath
                 })
@@ -157,5 +160,77 @@ namespace api.Controller.Admin
                 return StatusCode(500, new { Message = "خطای داخلی سرور.", Error = ex.Message, StatusCode = 500 });
             }
         }
+
+        // دریافت بلاگ بر اساس شناسه
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetBlogById(int id)
+        {
+            var blog = await _context.blogs.FindAsync(id);
+            if (blog == null)
+            {
+                return NotFound(new { Message = "بلاگ یافت نشد.", StatusCode = 404 });
+            }
+
+            return Ok(new
+            {
+                Message = "بلاگ با موفقیت دریافت شد.",
+                Data = blog,
+                StatusCode = 200
+            });
+        }
+
+        // ویرایش بلاگ موجود با فیلدهای اختیاری
+[HttpPut("update/{id}")]
+public async Task<IActionResult> UpdateBlog(int id, [FromForm] UpdateBlogDto updateBlogDto, IFormFile? file)
+{
+    var blog = await _context.blogs.FindAsync(id);
+    if (blog == null)
+    {
+        return NotFound(new { Message = "بلاگ یافت نشد.", StatusCode = 404 });
+    }
+
+    // به روز رسانی فیلدها تنها در صورتی که مقدار داشته باشند
+    if (!string.IsNullOrEmpty(updateBlogDto.Title))
+    {
+        blog.Title = updateBlogDto.Title;
+    }
+    if (!string.IsNullOrEmpty(updateBlogDto.Description))
+    {
+        blog.Description = updateBlogDto.Description;
+    }
+    if (!string.IsNullOrEmpty(updateBlogDto.Content))
+    {
+        blog.Content = updateBlogDto.Content;
+    }
+
+    // به روز رسانی تاریخ انتشار
+    blog.PublishedDate = DateTime.UtcNow;
+
+    // آپلود فایل جدید در صورت ارسال
+    if (file != null)
+    {
+        // در صورت وجود فایل قبلی، ابتدا آن را حذف می‌کنیم
+        if (!string.IsNullOrEmpty(blog.FilePath))
+        {
+            string oldFileName = Path.GetFileName(blog.FilePath);
+            try
+            {
+                await _fileUploadService.DeleteFileAsync(oldFileName, "blogs", id);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "خطا در حذف فایل قبلی {FilePath}", blog.FilePath);
+            }
+        }
+        blog.FilePath = await _fileUploadService.UploadFileAsync(file, "blogs", blog.Id);
+    }
+
+    _context.blogs.Update(blog);
+    await _context.SaveChangesAsync();
+
+    return Ok(new { Message = "بلاگ با موفقیت به روز شد.", Data = blog, StatusCode = 200 });
+}
+
+
     }
 }

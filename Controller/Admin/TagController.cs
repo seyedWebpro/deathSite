@@ -140,39 +140,87 @@ namespace api.Controller.Admin
             return Ok(new { StatusCode = 200, Message = "برچسب با موفقیت حذف شد." });
         }
 
+        // [HttpGet("getTagWithShahids/{title}")]
+        // public async Task<IActionResult> GetTagWithShahids(string title)
+        // {
+        //     // جستجوی تگ با نام مشخص شده
+        //     var tag = await _context.tags
+        //         .Include(t => t.ShahidTags)
+        //         .ThenInclude(st => st.Shahid)
+        //         .FirstOrDefaultAsync(t => t.Title == title);
+
+        //     if (tag == null)
+        //     {
+        //         return NotFound(new { StatusCode = 404, Message = "تگ مورد نظر یافت نشد." });
+        //     }
+
+        //     // آماده‌سازی نتیجه برای ارسال
+        //     var result = new
+        //     {
+        //         tag.Id,
+        //         tag.Title,
+        //         tag.Type,
+        //         tag.Description,
+        //         Shahids = tag.ShahidTags.Select(st => new
+        //         {
+        //             st.Shahid.Id,
+        //             st.Shahid.FullName,
+        //             st.Shahid.LastResponsibility,
+        //             st.Shahid.Biography,
+        //             st.Shahid.PhotoUrls
+        //         }).ToList()
+        //     };
+
+        //     return Ok(new { StatusCode = 200, Message = "اطلاعات تگ و شهدای مرتبط دریافت شد.", Data = result });
+        // }
+
         [HttpGet("getTagWithShahids/{title}")]
-        public async Task<IActionResult> GetTagWithShahids(string title)
+public async Task<IActionResult> GetTagWithShahids(string title)
+{
+    // جستجوی تگ با نام مشخص شده
+    var tag = await _context.tags
+        .Include(t => t.ShahidTags)
+        .ThenInclude(st => st.Shahid)
+        .FirstOrDefaultAsync(t => t.Title == title);
+
+    if (tag == null)
+    {
+        return NotFound(new { StatusCode = 404, Message = "تگ مورد نظر یافت نشد." });
+    }
+
+    // یافتن سایر تگ‌هایی که Type یکسانی دارند (به‌جز تگ اصلی)
+    var relatedTags = await _context.tags
+        .Where(t => t.Type == tag.Type && t.Id != tag.Id)
+        .Select(t => new
         {
-            // جستجوی تگ با نام مشخص شده
-            var tag = await _context.tags
-                .Include(t => t.ShahidTags)
-                .ThenInclude(st => st.Shahid)
-                .FirstOrDefaultAsync(t => t.Title == title);
+            t.Id,
+            t.Title,
+            t.Type,
+            t.Description
+        })
+        .ToListAsync();
 
-            if (tag == null)
-            {
-                return NotFound(new { StatusCode = 404, Message = "تگ مورد نظر یافت نشد." });
-            }
+    // آماده‌سازی نتیجه برای ارسال
+    var result = new
+    {
+        tag.Id,
+        tag.Title,
+        tag.Type,
+        tag.Description,
+        Shahids = tag.ShahidTags.Select(st => new
+        {
+            st.Shahid.Id,
+            st.Shahid.FullName,
+            st.Shahid.LastResponsibility,
+            st.Shahid.Biography,
+            st.Shahid.PhotoUrls
+        }).ToList(),
+        RelatedTags = relatedTags
+    };
 
-            // آماده‌سازی نتیجه برای ارسال
-            var result = new
-            {
-                tag.Id,
-                tag.Title,
-                tag.Type,
-                tag.Description,
-                Shahids = tag.ShahidTags.Select(st => new
-                {
-                    st.Shahid.Id,
-                    st.Shahid.FullName,
-                    st.Shahid.LastResponsibility,
-                    st.Shahid.Biography,
-                    st.Shahid.PhotoUrls
-                }).ToList()
-            };
+    return Ok(new { StatusCode = 200, Message = "اطلاعات تگ و شهدای مرتبط دریافت شد.", Data = result });
+}
 
-            return Ok(new { StatusCode = 200, Message = "اطلاعات تگ و شهدای مرتبط دریافت شد.", Data = result });
-        }
 
         [HttpPost("addTagToShahid")]
         public async Task<IActionResult> AddTagToShahid(int shahidId, int tagId)
