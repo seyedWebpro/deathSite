@@ -135,11 +135,8 @@ namespace deathSite.Controller
         [HttpPost("update-request/{updateRequestId}/approve")]
         public async Task<IActionResult> ApproveUpdateRequest(int updateRequestId)
         {
-
-
             try
             {
-                // یافتن درخواست به‌روزرسانی به همراه داده‌های مربوط به شهید
                 var updateRequest = await _context.ShahidUpdateRequests
                                         .Include(r => r.Shahid)
                                         .FirstOrDefaultAsync(r => r.Id == updateRequestId);
@@ -149,17 +146,24 @@ namespace deathSite.Controller
                 }
 
                 var shahid = updateRequest.Shahid;
-                // انتقال داده‌های پیشنهادی به مدل اصلی (می‌توانید بر اساس نیاز، جایگزینی یا الحاق انجام دهید)
+
+                // الحاق متن‌ها با یک خط فاصله
                 if (!string.IsNullOrEmpty(updateRequest.Biography))
-                    shahid.Biography = updateRequest.Biography;
+                    shahid.Biography = string.Join(Environment.NewLine,
+                        shahid.Biography,
+                        updateRequest.Biography);
 
                 if (!string.IsNullOrEmpty(updateRequest.Memories))
-                    shahid.Memories = updateRequest.Memories;
+                    shahid.Memories = string.Join(Environment.NewLine,
+                        shahid.Memories,
+                        updateRequest.Memories);
 
                 if (!string.IsNullOrEmpty(updateRequest.Will))
-                    shahid.Will = updateRequest.Will;
+                    shahid.Will = string.Join(Environment.NewLine,
+                        shahid.Will,
+                        updateRequest.Will);
 
-                // افزودن آدرس‌های فایل در صورت وجود
+                // اضافه کردن فایل‌ها به لیست موجود
                 if (updateRequest.PhotoUrls != null && updateRequest.PhotoUrls.Any())
                     shahid.PhotoUrls.AddRange(updateRequest.PhotoUrls);
 
@@ -169,9 +173,7 @@ namespace deathSite.Controller
                 if (updateRequest.VoiceUrls != null && updateRequest.VoiceUrls.Any())
                     shahid.VoiceUrls.AddRange(updateRequest.VoiceUrls);
 
-                // تغییر وضعیت درخواست به Approved
                 updateRequest.Status = "Approved";
-
                 await _context.SaveChangesAsync();
 
                 return Ok(new { StatusCode = 200, Message = "درخواست به‌روزرسانی تایید شد و اطلاعات به شهید اضافه گردید." });
@@ -210,12 +212,14 @@ namespace deathSite.Controller
             }
         }
 
+
         [Authorize(Roles = "Admin")]
         [HttpGet("update-requests")]
         public async Task<IActionResult> GetAllUpdateRequests()
         {
             var updateRequests = await _context.ShahidUpdateRequests
                 .Include(r => r.User)
+                .Include(r => r.Shahid) // اضافه کردن Include برای رابطه Shahid
                 .ToListAsync();
 
             var result = updateRequests.Select(r => new
@@ -229,6 +233,11 @@ namespace deathSite.Controller
                 r.PhotoUrls,
                 r.VideoUrls,
                 r.VoiceUrls,
+                Shahid = new // اضافه کردن اطلاعات شهید
+                {
+                    r.Shahid.Id,
+                    r.Shahid.FullName
+                },
                 User = new
                 {
                     r.User.Id,
@@ -244,9 +253,9 @@ namespace deathSite.Controller
 
         [Authorize(Roles = "Admin")]
         [HttpDelete("update-requests")]
-        public async Task<IActionResult> DeleteUpdateRequests([FromBody] DeleteUpdateRequestsDto deleteDto)
+        public async Task<IActionResult> DeleteUpdateRequests([FromQuery] DeleteUpdateRequestsDto deleteDto)
         {
-            if (deleteDto == null || deleteDto.UpdateRequestIds == null || !deleteDto.UpdateRequestIds.Any())
+            if (deleteDto?.UpdateRequestIds == null || !deleteDto.UpdateRequestIds.Any())
             {
                 return BadRequest(new { StatusCode = 400, Message = "هیچ درخواست انتخاب نشده است." });
             }

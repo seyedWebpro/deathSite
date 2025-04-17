@@ -125,10 +125,61 @@ namespace api.Controller
         }
 
 
+// [HttpGet("all")]
+// public async Task<IActionResult> GetAll()
+// {
+//     var shahids = await _context.shahids
+//         .Select(shahid => new
+//         {
+//             Id = shahid.Id,
+//             FullName = shahid.FullName,
+//             FatherName = shahid.FatherName,
+//             BirthBorn = shahid.BirthBorn,
+//             BirthDead = shahid.BirthDead,
+//             PlaceDead = shahid.PlaceDead,
+//             PlaceOfBurial = shahid.PlaceOfBurial,
+//             BurialSiteLink = shahid.BurialSiteLink,
+//             MediaLink = shahid.MediaLink,
+//             DeadPlaceLink = shahid.DeadPlaceLink,
+//             virtualLink = shahid.virtualLink,
+//             Responsibilities = shahid.Responsibilities,
+//             Operations = shahid.Operations,
+//             Biography = shahid.Biography,
+//             Will = shahid.Will,
+//             Memories = shahid.Memories,
+//             PhotoUrls = shahid.PhotoUrls,
+//             VideoUrls = shahid.VideoUrls,
+//             VoiceUrls = shahid.VoiceUrls,
+//             CauseOfMartyrdom = shahid.CauseOfMartyrdom,
+//             LastResponsibility = shahid.LastResponsibility,
+//             Gorooh = shahid.Gorooh,
+//             Yegan = shahid.Yegan,
+//             Niru = shahid.Niru,
+//             Ghesmat = shahid.Ghesmat,
+//             PoemVerseOne = shahid.PoemVerseOne,
+//             PoemVerseTwo = shahid.PoemVerseTwo,
+//             Approved = shahid.Approved,
+//             ViewCount = _context.ShahidViewCounts.Count(vc => vc.ShahidId == shahid.Id) // تعداد ویوها برای هر شهید
+//         })
+//         .ToListAsync();
+
+//     if (!shahids.Any())
+//     {
+//         return NotFound(new { StatusCode = 404, Message = "هیچ شهیدی پیدا نشد." });
+//     }
+
+//     return Ok(new
+//     {
+//         StatusCode = 200,
+//         Data = shahids
+//     });
+// }
+
 [HttpGet("all")]
 public async Task<IActionResult> GetAll()
 {
     var shahids = await _context.shahids
+        .Include(sh => sh.User) // اضافه کردن Include برای لود کردن اطلاعات کاربر
         .Select(shahid => new
         {
             Id = shahid.Id,
@@ -159,7 +210,13 @@ public async Task<IActionResult> GetAll()
             PoemVerseOne = shahid.PoemVerseOne,
             PoemVerseTwo = shahid.PoemVerseTwo,
             Approved = shahid.Approved,
-            ViewCount = _context.ShahidViewCounts.Count(vc => vc.ShahidId == shahid.Id) // تعداد ویوها برای هر شهید
+            ViewCount = _context.ShahidViewCounts.Count(vc => vc.ShahidId == shahid.Id), // تعداد ویوها برای هر شهید
+            UserInfo = new // اطلاعات کاربر ثبت کننده
+            {
+                FirstName = shahid.User.firstName,
+                LastName = shahid.User.lastName,
+                PhoneNumber = shahid.User.phoneNumber
+            }
         })
         .ToListAsync();
 

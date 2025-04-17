@@ -472,14 +472,23 @@ public async Task<IActionResult> GetDeceasedDetailsByDeceasedId(int deceasedId)
             return Ok(result);
         }
 
- [HttpGet("deceasedAccepted")]
+[HttpGet("deceasedAccepted")]
 public async Task<IActionResult> GetAllDeceasedAccepted()
 {
     var deceasedList = await _context.Deceaseds
-        .Where(d => d.IsApproved == ApprovalStatus.Approved) // فیلتر کردن متوفیان تایید شده
-        .Include(d => d.User)  // بارگذاری اطلاعات کاربر
-        .Include(d => d.Packages)  // بارگذاری پکیج‌های متوفی
-            .ThenInclude(dp => dp.Package) // بارگذاری پکیج‌های مرتبط با متوفی
+        .Where(d => d.IsApproved == ApprovalStatus.Approved) // فقط متوفیان تایید شده
+        .Select(d => new
+        {
+            d.Id,
+            d.FullName,
+            d.DateOfMartyrdom,
+            d.Ghaleb,
+            d.IsApproved,
+            d.PublishedDate,
+            d.CoverPhotoUrl,
+            ViewCount = d.DeathViews.Count, // تعداد ویوها
+            d.Description
+        })
         .ToListAsync();
 
     if (deceasedList == null || !deceasedList.Any())
@@ -487,37 +496,8 @@ public async Task<IActionResult> GetAllDeceasedAccepted()
         return NotFound();
     }
 
-    var result = deceasedList.Select(d => new
-    {
-        d.Id,
-        d.FullName,
-        d.DateOfMartyrdom,
-        d.Ghaleb,
-        d.IsApproved,
-        d.PublishedDate,
-        Packages = d.Packages.Select(dp => new
-        {
-            dp.Package.Name,
-            dp.Package.Price,
-            dp.Package.Duration,
-            dp.ActivationDate,
-            dp.IsActive,
-            dp.IsFreePackage
-        }).ToList(),  // پکیج‌های متوفی
-        User = new
-        {
-            d.User.firstName,
-            d.User.lastName,
-            d.User.phoneNumber,
-            d.User.Email
-        }
-    }).ToList();
-
-    return Ok(result);
+    return Ok(deceasedList);
 }
-
-
-
 
         // تایید متوفی 
 
